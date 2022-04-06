@@ -59,6 +59,19 @@ async function showstate(req, res) {
     }
 }
 
+async function showstateCity(req, res) {
+    const country = req.body.country
+    console.log(country)
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`select * from tbl_states where country_name = '${country}'`)
+        res.send(result.recordset)
+    }
+    catch (err) {
+        console.log(err)
+    }
+}
+
 async function EditState(req, res) {
     const sno = req.body.sno;
     const state_name = req.body.state_name;
@@ -79,4 +92,4 @@ async function EditState(req, res) {
 }
 
 
-module.exports = { TotalStates, deleteState, state, showstate, EditState }
+module.exports = { TotalStates, deleteState, state, showstate, EditState ,showstateCity}

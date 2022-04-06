@@ -8,12 +8,16 @@ const cityController = require('../controller/city');
 const unitController = require('../controller/unit');
 const bankController = require('../controller/Bank');
 const userController = require('../controller/user');
+const customerController = require('../controller/Customer');
+const vendorController = require('../controller/vendor');
 
 router.get('/Totalstate', statesController.TotalStates);
 router.post('/deleteState', statesController.deleteState);
 router.post('/state', statesController.state);
 router.post('/showstate', statesController.showstate);
 router.post('/EditState', statesController.EditState);
+router.post('/showstateCity', statesController.showstateCity);
+
 
 router.get('/Totalcountry', countryController.countries);
 router.post('/InsertCountry', countryController.InsertCountry);
@@ -32,6 +36,7 @@ router.post('/InsertCity',cityController.insertCity)
 router.post('/DeleteCity',cityController.deleteCity)
 router.post('/showcity',cityController.showcity)
 router.post('/UpdateCity',cityController.updateCity)
+router.post('/getCity',cityController.getCity)
 
 router.get('/TotalUnit',unitController.TotalUnit)
 router.post('/Unit',unitController.Unit)
@@ -51,5 +56,15 @@ router.post('/showuser',userController.showuser)
 router.post('/updateuser',userController.updateuser)
 router.post('/deleteuser',userController.deleteuser)
 
+router.get('/TotalCustomer',customerController.AllCustomer)
+router.post('/DeleteCustomer',customerController.DeleteCustomer)
+router.post('/AddCustomer',customerController.AddCustomer)
+router.post('/ShowCustomer',customerController.Customer)
+router.post('/UpdateCustomer',customerController.UpdateCustomer)
 
+router.post('/InsertVendor', vendorController.InsertVendor);
+router.post('/DeleteVendor', vendorController.DeleteVendor);
+router.get('/ShowVendor', vendorController.showVendor);
+router.post('/Vendor',vendorController.Vendor)
+router.post('/UpdateVendor',vendorController.UpdateVendor)
 module.exports = router;
