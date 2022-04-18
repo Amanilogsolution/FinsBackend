@@ -19,9 +19,16 @@ const InsertCurrency = async (req, res) => {
     console.log(country_name, country_code, currency_name, currency_code)
     try{
         await sql.connect(sqlConfig)
-        const result = await sql.query(`insert into tbl_currency (country_name,country_code,currency_name,currency_code,add_date_time,add_user_name,add_system_name,add_ip_address,status)
+        const duplicate = await sql.query(`select * from tbl_currency where currency_name='${currency_name}' OR currency_code='${currency_code}'`)
+        console.log(duplicate.recordset[0])
+        if(!duplicate.recordset.length){
+          const result = await sql.query(`insert into tbl_currency (country_name,country_code,currency_name,currency_code,add_date_time,add_user_name,add_system_name,add_ip_address,status)
                         values('${country_name}','${country_code}','${currency_name}','${currency_code}',getdate(),'admin','${os.hostname()}','${req.ip}','Active')`)
         res.send('Added')
+}else{
+   res.send("Already")
+}
+
     }
     catch(err){
         console.log(err)

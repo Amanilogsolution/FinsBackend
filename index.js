@@ -1,6 +1,8 @@
 const express = require('express')
 const router = require('./router/router');
 const os = require('os')
+require('dotenv').config()
+
 const app = express()
 const port = 3008
 const sql = require('mssql')
@@ -8,11 +10,13 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const sqlConfig = require('./config.js')
 
-app.use(cors({origin: '*'}))
+app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 app.use('/api',router)
+
+
 
 app.post('/org', async(req, res) => {
     const org_name = req.body.org_name;
@@ -40,8 +44,10 @@ app.post('/org', async(req, res) => {
     }
     catch(err){
         console.log(err)
-    }
+    } 
 })
+
+
 
 
 app.listen(port, (err, req, res, next) => {

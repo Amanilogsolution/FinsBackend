@@ -17,11 +17,18 @@ const InsertCountry = async (req, res) => {
     const country_id = req.body.country_id;
     const country_code = req.body.country_code;
     const country_phonecode = req.body.country_phonecode;
+    console.log(country_name,country_id,country_code,country_phonecode)
     try{
         await sql.connect(sqlConfig)
-        const result = await sql.query(`insert into tbl_countries (country_name,country_id,country_code,country_phonecode,add_date_time,add_user_name,add_system_name,add_ip_address,status)
+        const duplicate = await sql.query(`select * from tbl_countries where country_name='${country_name}' OR country_id='${country_id}' OR country_code='${country_code}' OR country_phonecode='${country_phonecode}'`)
+        console.log(duplicate.recordset[0])
+        if(!duplicate.recordset.length){
+                     const result = await sql.query(`insert into tbl_countries (country_name,country_id,country_code,country_phonecode,add_date_time,add_user_name,add_system_name,add_ip_address,status)
         values('${country_name}','${country_id}','${country_code}','${country_phonecode}',getdate(),'admin','${os.hostname()}','${req.ip}','Active')`)
         res.send('Added')
+        }else{
+            res.send("Already")
+        }
     }
     catch(err){
         console.log(err)

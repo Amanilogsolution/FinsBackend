@@ -33,13 +33,22 @@ async function TotalUnit(req, res) {
           async function Unit(req,res){
                     const unit_name = req.body.unit_name;
                     const unit_symbol = req.body.unit_symbol;
-                    
-                    const system_name = os.hostname()
+                    console.log(unit_name,unit_symbol)
+                    // const system_name = os.hostname()
                     try{
                         await sql.connect(sqlConfig)
-                        const result = await sql.query(`insert into tbl_unit (unit_name,unit_symbol,add_date_time,add_user_name,add_system_name,add_ip_address,status)
-                        values('${unit_name}','${unit_symbol}',getdate(),'admin','${system_name}','${req.ip}','Active')`)
+                        const duplicate = await sql.query(`select * from tbl_unit where unit_name='${unit_name}' OR unit_symbol='${unit_symbol}'`)
+                        console.log(duplicate)
+
+                        if(!duplicate.recordset.length){
+                               const result = await sql.query(`insert into tbl_unit (unit_name,unit_symbol,add_date_time,add_user_name,add_system_name,add_ip_address,status)
+                        values('${unit_name}','${unit_symbol}',getdate(),'admin','${os.hostname()}','${req.ip}','Active')`)
                         res.send('Added')
+                        }else{
+                            res.send("Already")
+                        }
+                        
+                    
                         }
             
                         catch(err){
@@ -49,6 +58,7 @@ async function TotalUnit(req, res) {
 
    async function showunit(req,res){
                             const sno = req.body.sno
+                            console.log(sno)
                             try{
                                 await sql.connect(sqlConfig)
                                 const result = await sql.query(`select * from tbl_unit where sno = ${sno}`)

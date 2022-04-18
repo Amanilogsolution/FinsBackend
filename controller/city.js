@@ -20,9 +20,16 @@ const insertCity = async (req, res) => {
     console.log(city_id, city_name, state_name,country_name)
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`insert into tbl_cities (city_id,city_name,state_name,country_name,add_date_time,add_user_name,add_system_name,add_ip_address,status)
+        const duplicate = await sql.query(`select * from tbl_cities where city_id='${city_id}' OR city_name='${city_name}'`)
+        console.log(duplicate.recordset[0])
+        if(!duplicate.recordset.length){
+                     const result = await sql.query(`insert into tbl_cities (city_id,city_name,state_name,country_name,add_date_time,add_user_name,add_system_name,add_ip_address,status)
                         values('${city_id}','${city_name}','${state_name}','${country_name}',getdate(),'admin','${os.hostname()}','${req.ip}','Active')`)
         res.send('Added')
+        }else{
+            res.send("Already")
+        }
+       
     }
     catch (err) {
         console.log(err)

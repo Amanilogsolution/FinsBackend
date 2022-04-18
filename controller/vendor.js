@@ -137,6 +137,17 @@ async function UpdateVendor(req,res){
             }
          }
 
+         const Vendor_id = async (req, res) => {
+            try{
+                await sql.connect(sqlConfig)
+                const result = await sql.query(`SELECT vend_id from FINSDB.dbo.tbl_new_vendor`)
+                res.send(result.recordset)
+            }
+            catch(err){
+                console.log(err)
+            }
+        }
 
-module.exports = {InsertVendor,showVendor,DeleteVendor,Vendor,UpdateVendor}
+
+module.exports = {InsertVendor,showVendor,DeleteVendor,Vendor,UpdateVendor,Vendor_id}
 

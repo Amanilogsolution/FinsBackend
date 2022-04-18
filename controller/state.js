@@ -38,9 +38,20 @@ async function state(req, res) {
     const system_name = os.hostname()
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`insert into tbl_states (state_name,state_code,state_short_name,state_type,country_name,add_date_time,add_user_name,add_system_name,add_ip_address,status)
+        console.log(state_name,country_name,state_code,state_short_name,select_type)
+        const duplicate = await sql.query(`select * from tbl_states where state_name='${state_name}' OR state_code='${state_code}' OR state_short_name='${state_short_name}'`)
+        console.log(duplicate.recordset)
+        if(!duplicate.recordset.length){
+          const result = await sql.query(`insert into tbl_states (state_name,state_code,state_short_name,state_type,country_name,add_date_time,add_user_name,add_system_name,add_ip_address,status)
                         values('${state_name}','${state_code}','${state_short_name}','${select_type}','${country_name}',getdate(),'admin','${system_name}','${req.ip}','Active')`)
         res.send('Added')
+}else{
+   res.send("Already")
+}
+
+        // const result = await sql.query(`insert into tbl_states (state_name,state_code,state_short_name,state_type,country_name,add_date_time,add_user_name,add_system_name,add_ip_address,status)
+        //                 values('${state_name}','${state_code}','${state_short_name}','${select_type}','${country_name}',getdate(),'admin','${system_name}','${req.ip}','Active')`)
+        // res.send('Added')
     }
     catch (err) {
         console.log(err)

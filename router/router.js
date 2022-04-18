@@ -10,6 +10,9 @@ const bankController = require('../controller/Bank');
 const userController = require('../controller/user');
 const customerController = require('../controller/Customer');
 const vendorController = require('../controller/vendor');
+const AddressController = require('../controller/Addresses');
+const LoginController = require('../controller/Login')
+const checkAuth = require("../Middleware/checkAuth")
 
 router.get('/Totalstate', statesController.TotalStates);
 router.post('/deleteState', statesController.deleteState);
@@ -40,7 +43,7 @@ router.post('/getCity',cityController.getCity)
 
 router.get('/TotalUnit',unitController.TotalUnit)
 router.post('/Unit',unitController.Unit)
-router.post('/Showunit',unitController.showunit)
+router.post('/Showunit',checkAuth,unitController.showunit)
 router.post('/UpdateUnit',unitController.UpdateUnit)
 router.post('/deleteUnit',unitController.deleteUnit)
 
@@ -61,10 +64,30 @@ router.post('/DeleteCustomer',customerController.DeleteCustomer)
 router.post('/AddCustomer',customerController.AddCustomer)
 router.post('/ShowCustomer',customerController.Customer)
 router.post('/UpdateCustomer',customerController.UpdateCustomer)
+router.get('/CustomerId',customerController.Customer_id)
+router.post('/Unique_Cust_id',customerController.Unique_Cust_id)
+router.get('/Lastcust_id',customerController.Lastcust_id)
 
 router.post('/InsertVendor', vendorController.InsertVendor);
 router.post('/DeleteVendor', vendorController.DeleteVendor);
 router.get('/ShowVendor', vendorController.showVendor);
 router.post('/Vendor',vendorController.Vendor)
 router.post('/UpdateVendor',vendorController.UpdateVendor)
+router.get('/VendorId',vendorController.Vendor_id)
+
+router.post('/InsertCustAddress', AddressController.InsertCustomerAddress);
+router.post('/InsertVendAddress', AddressController.InsertVendorAddress);
+router.post('/ShowCustAddress', AddressController.TotalCustAddress);
+router.post('/DeleteCustAddress', AddressController.DeleteCustAddress);
+router.post('/CustAddress', AddressController.CustAddress);
+router.post('/UpdateCustAddress', AddressController.UpdateCustAddress);
+
+router.post('/ShowVendAddress', AddressController.TotalVendAddress);
+router.post('/DeleteVendAddress', AddressController.DeleteVendAddress);
+router.post('/VendorAddress', AddressController.VendAddress);
+router.post('/UpdateVendAddress', AddressController.UpdateVendAddress);
+
+router.post('/UserLogin',LoginController.User_login)
+router.post('/UserLogout',LoginController.User_logout)
+
 module.exports = router;
