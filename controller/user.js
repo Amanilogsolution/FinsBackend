@@ -1,6 +1,7 @@
 const sql =require('mssql')
 const sqlConfig = require('../config.js')
 const os = require('os')
+const uuidv1 = require("uuid/v1");
 
 const user = async (req, res) => {
     try {
@@ -25,12 +26,12 @@ const InsertUser = async (req, res) => {
     const reporting_to = req.body.reporting_to;
     const designation = req.body.designation;
     const two_factor_authentication = req.body.two_factor_authentication;
-
+    const uuid = uuidv1()
 
     try{
         await sql.connect(sqlConfig)
-        const result = await sql.query(`insert into tbl_usermaster (employee_name,role,warehouse,user_name,password,email_id,phone,operate_mode,status,customer,reporting_to,designation,two_factor_authentication,add_date_time,add_user_name,add_system_name,add_ip_address)
-        values('${employee_name}','${role}','${warehouse}','${username}','${password}','${email_id}','${phone}','${operatemode}','Active','${customer}','${reporting_to}','${designation}','${two_factor_authentication}',getdate(),'admin','rupesh','${req.ip}')`)
+        const result = await sql.query(`insert into tbl_usermaster (employee_name,role,warehouse,user_name,password,email_id,phone,operate_mode,status,customer,reporting_to,designation,two_factor_authentication,user_uuid,add_date_time,add_user_name,add_system_name,add_ip_address)
+        values('${employee_name}','${role}','${warehouse}','${username}','${password}','${email_id}','${phone}','${operatemode}','Active','${customer}','${reporting_to}','${designation}','${two_factor_authentication}','${uuid}',getdate(),'admin','rupesh','${req.ip}')`)
         res.send('Added')
     }
     catch(err){

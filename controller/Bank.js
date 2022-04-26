@@ -1,6 +1,7 @@
 const sql =require('mssql')
 const sqlConfig = require('../config.js')
 const os = require('os')
+const uuidv1 = require("uuid/v1");
 
 const InsertBank = async (req, res) => {
     // const bank_id = req.body.bank_id;
@@ -19,13 +20,14 @@ const InsertBank = async (req, res) => {
     const acname = req.body.acname;
     // const company_id = req.body.company_id;
     const description = req.body.description;
+    const uuid = uuidv1()
     console.log(req.body)
 try{
     await sql.connect(sqlConfig)
     const duplicate = await sql.query(`select * from tbl_bankmaster where account_no='${account_no}'`)
     if(!duplicate.recordset.length){
-         const result = await sql.query(`insert into tbl_bankmaster (account_code,bank_name,account_no,address_line1,address_line2,state,city,pincode,ifsc_code,description,status,ac_type,acname,add_date_time,add_user_name,add_system_name,add_ip_address)
-                    values('${account_code}','${bank_name}','${account_no}','${address_line1}','${address_line2}','${state}','${city}','${pincode}','${ifsc_code}','${description}','Active','${actype}','${acname}',getdate(),'Aman','${os.hostname()}','${req.ip}')`)
+         const result = await sql.query(`insert into tbl_bankmaster (account_code,bank_name,account_no,address_line1,address_line2,state,city,pincode,ifsc_code,description,bank_uuid,status,ac_type,acname,add_date_time,add_user_name,add_system_name,add_ip_address)
+                    values('${account_code}','${bank_name}','${account_no}','${address_line1}','${address_line2}','${state}','${city}','${pincode}','${ifsc_code}','${description}','${uuid}','Active','${actype}','${acname}',getdate(),'Aman','${os.hostname()}','${req.ip}')`)
     res.send('Added')
  }else{
      res.send("Already")

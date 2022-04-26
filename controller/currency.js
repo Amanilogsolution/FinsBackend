@@ -1,6 +1,7 @@
 const sql =require('mssql')
 const sqlConfig = require('../config.js')
 const os = require('os')
+const uuidv1 = require("uuid/v1");
 
 const currency = async (req, res) => {
     try {
@@ -16,14 +17,15 @@ const InsertCurrency = async (req, res) => {
     const country_code = req.body.country_code;
     const currency_name = req.body.currency_name;
     const currency_code = req.body.currency_code;
+    const uuid = uuidv1()
     console.log(country_name, country_code, currency_name, currency_code)
     try{
         await sql.connect(sqlConfig)
         const duplicate = await sql.query(`select * from tbl_currency where currency_name='${currency_name}' OR currency_code='${currency_code}'`)
         console.log(duplicate.recordset[0])
         if(!duplicate.recordset.length){
-          const result = await sql.query(`insert into tbl_currency (country_name,country_code,currency_name,currency_code,add_date_time,add_user_name,add_system_name,add_ip_address,status)
-                        values('${country_name}','${country_code}','${currency_name}','${currency_code}',getdate(),'admin','${os.hostname()}','${req.ip}','Active')`)
+          const result = await sql.query(`insert into tbl_currency (country_name,country_code,currency_name,currency_code,currency_uuid,add_date_time,add_user_name,add_system_name,add_ip_address,status)
+                        values('${country_name}','${country_code}','${currency_name}','${currency_code}','${uuid}',getdate(),'admin','${os.hostname()}','${req.ip}','Active')`)
         res.send('Added')
 }else{
    res.send("Already")
@@ -76,4 +78,21 @@ async function ShowCurrency(req, res) {
     }
 }
 
-module.exports = {currency,InsertCurrency,deleteCurrency,UpdateCurrency,ShowCurrency}
+const ImportCurrency = async(req,res) =>{
+    const datas = req.body.data;
+    console.log(datas)
+    try{
+        // datas.forEach(async(item) => {
+        // await sql.connect(sqlConfig)
+        // var result = await sql.query(`insert into tbl_currency (country_name,country_code,currency_name,currency_code,currency_uuid,add_date_time,add_user_name,add_system_name,add_ip_address,status)
+        // values('${item.country_name}','${item.country_code}','${item.currency_name}','${item.currency_code}','${uuidv1()}',getdate(),'admin','${os.hostname()}','${req.ip}','Active')`)     
+        // }
+        // )
+        // res.send("data Imported")
+    }
+    catch (err){
+        console.log(err)
+    }
+}
+
+module.exports = {currency,InsertCurrency,deleteCurrency,UpdateCurrency,ShowCurrency,ImportCurrency}

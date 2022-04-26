@@ -2,6 +2,8 @@ const sql =require('mssql')
 const sqlConfig = require('../config.js')
 const os = require('os')
 const { request } = require('http')
+const uuidv1 = require("uuid/v1");
+
 
 const AllCustomer = async (req, res) => {
     try{
@@ -63,6 +65,7 @@ const AllCustomer = async (req, res) => {
         const contact_person_designation = req.body.contact_person_designation;
         const contact_person_department = req.body.contact_person_department;
         const remark = req.body.remark;
+        const uuid = uuidv1()
         console.log(billing_address_phone)
         // console.log(mast_id,cust_id,cust_type,cust_name,company_name,cust_display_name,cust_email,cust_work_phone,cust_phone,skype_detail,designation,department,website,gst_treatment,gstin_uin,pan_no,place_of_supply,tax_preference,exemption_reason,currency,
         //     opening_balance,payment_terms,enable_portal,portal_language,facebook_url,twitter_url,billing_address_attention,billing_address_country,
@@ -88,11 +91,11 @@ const AllCustomer = async (req, res) => {
                 opening_balance,payment_terms,enable_portal,portal_language,facebook_url,twitter_url,billing_address_attention,billing_address_country,
                 billing_address_city,billing_address_state,billing_address_pincode,billing_address_phone,billing_address_fax,contact_person_name,
                 contact_person_email,contact_person_work_phone,contact_person_phone,contact_person_skype,contact_person_designation,
-                contact_person_department,remark,status,add_date_time,add_user_name,add_system_name,add_ip_address)
+                contact_person_department,remark,newcust_uuid,status,add_date_time,add_user_name,add_system_name,add_ip_address)
                 Values('${mast_id}','${cust_id}','${cust_type}','${cust_name}','${company_name}','${cust_display_name}','${cust_email}',${cust_work_phone},${cust_phone},'${skype_detail}','${designation}',
                       '${department}','${website}','${gst_treatment}','${gstin_uin}','${pan_no}','${place_of_supply}','${tax_preference}','${exemption_reason}','${currency}','${opening_balance}','${payment_terms}','${enable_portal}','${portal_language}',
                       '${facebook_url}','${twitter_url}','${billing_address_attention}','${billing_address_country}','${billing_address_city}','${billing_address_state}',${billing_address_pincode},'${billing_address_phone}','${billing_address_fax}','${contact_person_name}',
-                      '${contact_person_email}',${contact_person_work_phone},${contact_person_phone},'${contact_person_skype}','${contact_person_designation}','${contact_person_department}','${remark}','Active',getdate(),'Aman','${os.hostname()}',
+                      '${contact_person_email}',${contact_person_work_phone},${contact_person_phone},'${contact_person_skype}','${contact_person_designation}','${contact_person_department}','${remark}','${uuid}','Active',getdate(),'Aman','${os.hostname()}',
                         '${req.ip}');`) 
                         const result2 = await sql.query(`INSERT into tbl_fin_year(fin_year,year,from_date,to_date,mc_totalid,cust_totalid)
                         Values('${finyear}','${trimyear}','${year2}','${year1}','0','${getnewval}')`)

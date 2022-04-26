@@ -1,6 +1,7 @@
 const sql =require('mssql')
 const sqlConfig = require('../config.js')
 const os = require('os')
+const uuidv1 = require("uuid/v1");
 
 const InsertVendor = async (req, res) => {
     const mast_id = req.body.mast_id;
@@ -42,6 +43,7 @@ const InsertVendor = async (req, res) => {
     const contact_person_designation = req.body.contact_person_designation;
     const contact_person_department = req.body.contact_person_department;
     const remark = req.body.remark;
+    const uuid = uuidv1()
 
 try{
     await sql.connect(sqlConfig)
@@ -54,7 +56,7 @@ try{
         billing_address_city,billing_address_state,billing_address_pincode,billing_address_phone,
         billing_address_fax,contact_person_name,
         contact_person_email,contact_person_work_phone,contact_person_phone,contact_person_skype,contact_person_designation,
-        contact_person_department,remark,status,add_date_time,add_user_name,add_system_name,add_ip_address)
+        contact_person_department,remark,newvend_uuid,status,add_date_time,add_user_name,add_system_name,add_ip_address)
                     values('${mast_id}','${vend_id}','${vend_name}','${company_name}','${vend_display_name}',
                     '${vend_email}','${vend_work_phone}','${vend_phone}','${skype_detail}','${designation}',
                     '${department}','${website}','${gst_treatment}','${gstin_uin}','${pan_no}',
@@ -63,7 +65,7 @@ try{
                     '${facebook_url}','${twitter_url}','${billing_address_attention}','${billing_address_country}','${billing_address_city}',
                     '${billing_address_state}','${billing_address_pincode}','${billing_address_phone}','${billing_address_fax}','${contact_person_name}',
                     '${contact_person_email}','${contact_person_work_phone}','${contact_person_phone}','${contact_person_skype}','${contact_person_designation}',
-                    '${contact_person_department}','${remark}','Active',getdate(),'Admin','${os.hostname()}','${req.ip}')`)
+                    '${contact_person_department}','${remark}','${uuid}','Active',getdate(),'Admin','${os.hostname()}','${req.ip}')`)
         res.send('Added')
    }
 catch(err){

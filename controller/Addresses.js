@@ -47,18 +47,32 @@ const InsertVendorAddress = async (req, res) => {
         console.log(err)
         }
     }
-   const TotalCustAddress = async (req, res) => {
-    const cust_id = req.body.cust_id;
-    console.log(cust_id);
+   const SelectCustAddress = async (req, res) => {
+    const cust_name = req.body.cust_name;
+    console.log(cust_name);
     try{
         await sql.connect(sqlConfig)
-        const result = await sql.query(`SELECT  * FROM tbl_new_customer WHERE cust_name LIKE '%${cust_id}%';`)
+        const result = await sql.query(`SELECT  cust_name FROM tbl_cust_addresses WHERE cust_name LIKE '%${cust_name}%';`)
         res.send(result.recordset)
     }
     catch(err){
         console.log(err)
         }
     }
+
+    const TotalCustAddress = async (req, res) => {
+        const cust_id = req.body.cust_id;
+        console.log(cust_id);
+        try{
+            await sql.connect(sqlConfig)
+            const result = await sql.query(`SELECT * FROM tbl_cust_addresses WHERE cust_name ='${cust_id}';`)
+            res.send(result.recordset)
+        }
+        catch(err){
+            console.log(err)
+            }
+        }
+    // const TotalCustAddress
 
     const TotalVendAddress = async (req, res) => {
         const vend_id = req.body.vend_id;
@@ -164,4 +178,4 @@ const InsertVendorAddress = async (req, res) => {
                 }
             }
 
-module.exports = {InsertCustomerAddress,InsertVendorAddress,TotalCustAddress,TotalVendAddress,DeleteCustAddress,DeleteVendAddress,CustAddress,VendAddress,UpdateCustAddress,UpdateVendAddress}
+module.exports = {InsertCustomerAddress,InsertVendorAddress,TotalCustAddress,TotalVendAddress,DeleteCustAddress,DeleteVendAddress,CustAddress,VendAddress,UpdateCustAddress,UpdateVendAddress,SelectCustAddress}

@@ -13,81 +13,90 @@ const vendorController = require('../controller/vendor');
 const AddressController = require('../controller/Addresses');
 const LoginController = require('../controller/Login')
 const checkAuth = require("../Middleware/checkAuth")
+const Token = require('../controller/Token')
+const OrganisationController = require('../controller/Org')
 
-router.get('/Totalstate', statesController.TotalStates);
-router.post('/deleteState', statesController.deleteState);
+router.get('/totalstate', statesController.TotalStates);
+router.post('/deletestate', statesController.deleteState);
 router.post('/state', statesController.state);
 router.post('/showstate', statesController.showstate);
-router.post('/EditState', statesController.EditState);
-router.post('/showstateCity', statesController.showstateCity);
+router.post('/editstate', statesController.EditState);
+router.post('/showstatecity', statesController.showstateCity);
 
 
-router.get('/Totalcountry', countryController.countries);
-router.post('/InsertCountry', countryController.InsertCountry);
-router.post('/Showcountry', countryController.showcountry);
-router.post('/Updatecountry', countryController.updatecountry);
-router.post('/deleteCountry', countryController.deletecountry);
+router.get('/totalcountry', countryController.countries);
+router.post('/insertcountry', countryController.InsertCountry);
+router.post('/showcountry', countryController.showcountry);
+router.post('/updatecountry', countryController.updatecountry);
+router.post('/deletecountry', countryController.deletecountry);
 
 router.get('/currency', currencyController.currency);
-router.post('/InsertCurrecy', currencyController.InsertCurrency);
-router.post('/DeleteCurrency', currencyController.deleteCurrency);
-router.post('/UpdateCurrency', currencyController.UpdateCurrency);
-router.post('/ShowCurrency', currencyController.ShowCurrency);
+router.post('/insertcurrecy', currencyController.InsertCurrency);
+router.post('/deletecurrency', currencyController.deleteCurrency);
+router.post('/updatecurrency', currencyController.UpdateCurrency);
+router.post('/showcurrency', currencyController.ShowCurrency);
+router.post('/ImportCurrency', currencyController.ImportCurrency)
 
-router.get('/Totalcity',cityController.city)
-router.post('/InsertCity',cityController.insertCity)
-router.post('/DeleteCity',cityController.deleteCity)
+router.get('/totalcity',cityController.city)
+router.post('/insertcity',cityController.insertCity)
+router.post('/deletecity',cityController.deleteCity)
 router.post('/showcity',cityController.showcity)
-router.post('/UpdateCity',cityController.updateCity)
-router.post('/getCity',cityController.getCity)
+router.post('/updatecity',cityController.updateCity)
+router.post('/getcity',cityController.getCity)
 
-router.get('/TotalUnit',unitController.TotalUnit)
-router.post('/Unit',unitController.Unit)
-router.post('/Showunit',checkAuth,unitController.showunit)
-router.post('/UpdateUnit',unitController.UpdateUnit)
-router.post('/deleteUnit',unitController.deleteUnit)
+router.get('/totalunit',checkAuth,unitController.TotalUnit)
+router.post('/unit',unitController.Unit)
+router.post('/showunit',checkAuth,unitController.showunit)
+router.post('/updateunit',unitController.UpdateUnit)
+router.post('/deleteunit',unitController.deleteUnit)
 
-router.get('/TotalBank',bankController.TotalBanks)
-router.post('/AddBank',bankController.InsertBank)
-router.post('/DeleteBank',bankController.DeleteBank)
-router.post('/ShowBank',bankController.ShowBank)
-router.post('/UpdateBank',bankController.UpdateBank)
+router.get('/totalbank',bankController.TotalBanks)
+router.post('/addbank',bankController.InsertBank)
+router.post('/deletebank',bankController.DeleteBank)
+router.post('/showbank',bankController.ShowBank)
+router.post('/updatebank',bankController.UpdateBank)
 
-router.get('/TotalUser',userController.user)
-router.post('/InsertUser',userController.InsertUser)
+router.get('/totaluser',userController.user)
+router.post('/insertuser',userController.InsertUser)
 router.post('/showuser',userController.showuser)
 router.post('/updateuser',userController.updateuser)
 router.post('/deleteuser',userController.deleteuser)
 
-router.get('/TotalCustomer',customerController.AllCustomer)
-router.post('/DeleteCustomer',customerController.DeleteCustomer)
-router.post('/AddCustomer',customerController.AddCustomer)
-router.post('/ShowCustomer',customerController.Customer)
-router.post('/UpdateCustomer',customerController.UpdateCustomer)
-router.get('/CustomerId',customerController.Customer_id)
-router.post('/Unique_Cust_id',customerController.Unique_Cust_id)
-router.get('/Lastcust_id',customerController.Lastcust_id)
+router.get('/totalcustomer',customerController.AllCustomer)
+router.post('/deletecustomer',customerController.DeleteCustomer)
+router.post('/addcustomer',customerController.AddCustomer)
+router.post('/showcustomer',customerController.Customer)
+router.post('/updatecustomer',customerController.UpdateCustomer)
+router.get('/customerid',customerController.Customer_id)
+router.post('/unique_cust_id',customerController.Unique_Cust_id)
+router.get('/lastcust_id',customerController.Lastcust_id)
 
-router.post('/InsertVendor', vendorController.InsertVendor);
-router.post('/DeleteVendor', vendorController.DeleteVendor);
-router.get('/ShowVendor', vendorController.showVendor);
-router.post('/Vendor',vendorController.Vendor)
-router.post('/UpdateVendor',vendorController.UpdateVendor)
-router.get('/VendorId',vendorController.Vendor_id)
+router.post('/insertvendor', vendorController.InsertVendor);
+router.post('/deletevendor', vendorController.DeleteVendor);
+router.get('/showvendor', vendorController.showVendor);
+router.post('/vendor',vendorController.Vendor)
+router.post('/updatevendor',vendorController.UpdateVendor)
+router.get('/vendorid',vendorController.Vendor_id)
 
-router.post('/InsertCustAddress', AddressController.InsertCustomerAddress);
-router.post('/InsertVendAddress', AddressController.InsertVendorAddress);
-router.post('/ShowCustAddress', AddressController.TotalCustAddress);
-router.post('/DeleteCustAddress', AddressController.DeleteCustAddress);
-router.post('/CustAddress', AddressController.CustAddress);
-router.post('/UpdateCustAddress', AddressController.UpdateCustAddress);
+router.post('/insertcustaddress', AddressController.InsertCustomerAddress);
+router.post('/insertvendaddress', AddressController.InsertVendorAddress);
+router.post('/showcustaddress', AddressController.TotalCustAddress);
+router.post('/deletecustaddress', AddressController.DeleteCustAddress);
+router.post('/custaddress', AddressController.CustAddress);
+router.post('/updatecustaddress', AddressController.UpdateCustAddress);
+router.post('/SelectCustAddress',AddressController.SelectCustAddress)
 
-router.post('/ShowVendAddress', AddressController.TotalVendAddress);
-router.post('/DeleteVendAddress', AddressController.DeleteVendAddress);
-router.post('/VendorAddress', AddressController.VendAddress);
-router.post('/UpdateVendAddress', AddressController.UpdateVendAddress);
+router.post('/showvendaddress', AddressController.TotalVendAddress);
+router.post('/deletevendaddress', AddressController.DeleteVendAddress);
+router.post('/vendoraddress', AddressController.VendAddress);
+router.post('/updatevendaddress', AddressController.UpdateVendAddress);
 
-router.post('/UserLogin',LoginController.User_login)
-router.post('/UserLogout',LoginController.User_logout)
+router.post('/userlogin',LoginController.User_login)
+router.post('/userlogout',LoginController.User_logout)
+
+router.post('/SchemaCreate',OrganisationController.Insertorg)
+
+router.post('/Token',Token.token)
+router.post('/Totaldata',OrganisationController.InsertTotalTable)
 
 module.exports = router;
