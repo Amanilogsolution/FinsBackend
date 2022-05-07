@@ -15,6 +15,10 @@ const LoginController = require('../controller/Login')
 const checkAuth = require("../Middleware/checkAuth")
 const Token = require('../controller/Token')
 const OrganisationController = require('../controller/Org')
+const NewdbController = require('../controller/Newdb')
+const OrgTableController = require('../controller/Org_table')
+
+router.post('/newdb', NewdbController.Newdb);
 
 router.get('/totalstate', statesController.TotalStates);
 router.post('/deletestate', statesController.deleteState);
@@ -22,15 +26,18 @@ router.post('/state', statesController.state);
 router.post('/showstate', statesController.showstate);
 router.post('/editstate', statesController.EditState);
 router.post('/showstatecity', statesController.showstateCity);
+router.post('/importState', statesController.ImportState);
 
 
-router.get('/totalcountry', countryController.countries);
+router.post('/totalcountry', countryController.countries);
 router.post('/insertcountry', countryController.InsertCountry);
 router.post('/showcountry', countryController.showcountry);
 router.post('/updatecountry', countryController.updatecountry);
 router.post('/deletecountry', countryController.deletecountry);
+router.post('/checkimportcountry',countryController.CheckimportCountry)
 
-router.get('/currency', currencyController.currency);
+
+router.post('/currency', currencyController.currency);
 router.post('/insertcurrecy', currencyController.InsertCurrency);
 router.post('/deletecurrency', currencyController.deleteCurrency);
 router.post('/updatecurrency', currencyController.UpdateCurrency);
@@ -43,6 +50,7 @@ router.post('/deletecity',cityController.deleteCity)
 router.post('/showcity',cityController.showcity)
 router.post('/updatecity',cityController.updateCity)
 router.post('/getcity',cityController.getCity)
+router.post('/importcity',cityController.ImportCity)
 
 router.get('/totalunit',checkAuth,unitController.TotalUnit)
 router.post('/unit',unitController.Unit)
@@ -70,6 +78,7 @@ router.post('/updatecustomer',customerController.UpdateCustomer)
 router.get('/customerid',customerController.Customer_id)
 router.post('/unique_cust_id',customerController.Unique_Cust_id)
 router.get('/lastcust_id',customerController.Lastcust_id)
+router.post('/ImportCustomer',customerController.ImportCustomer)
 
 router.post('/insertvendor', vendorController.InsertVendor);
 router.post('/deletevendor', vendorController.DeleteVendor);
@@ -98,5 +107,8 @@ router.post('/SchemaCreate',OrganisationController.Insertorg)
 
 router.post('/Token',Token.token)
 router.post('/Totaldata',OrganisationController.InsertTotalTable)
+router.post('/Org_table',OrgTableController.Org_table)
+router.get('/TotalOrganistion',OrgTableController.TotalOrganisation)
+
 
 module.exports = router;

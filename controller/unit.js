@@ -7,7 +7,7 @@ const uuidv1 = require("uuid/v1");
 async function TotalUnit(req, res) {
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from tbl_unit order by sno desc`)
+        const result = await sql.query(`select * from FINSDB.dbo.tbl_unit order by sno desc`)
         res.send(result.recordset)
         // console.log(res.send(result.recordset))
     }
@@ -22,7 +22,7 @@ async function deleteUnit(req, res) {
     // console.log(sno,status)
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`update tbl_unit set status='${status}' where sno = ${sno}`)
+        const result = await sql.query(`update FINSDB.dbo.tbl_unit set status='${status}' where sno = ${sno}`)
         res.send('done')
     }
     catch (err) {
@@ -40,11 +40,11 @@ async function Unit(req, res) {
     // const system_name = os.hostname()
     try {
         await sql.connect(sqlConfig)
-        const duplicate = await sql.query(`select * from tbl_unit where unit_name='${unit_name}' OR unit_symbol='${unit_symbol}'`)
+        const duplicate = await sql.query(`select * from FINSDB.dbo.tbl_unit where unit_name='${unit_name}' OR unit_symbol='${unit_symbol}'`)
         // console.log(duplicate)
 
         if (!duplicate.recordset.length) {
-            const result = await sql.query(`insert into tbl_unit (unit_name,unit_symbol,unit_uuid,add_date_time,add_user_name,add_system_name,add_ip_address,status)
+            const result = await sql.query(`insert into FINSDB.dbo.tbl_unit (unit_name,unit_symbol,unit_uuid,add_date_time,add_user_name,add_system_name,add_ip_address,status)
                         values('${unit_name}','${unit_symbol}','${uuid}',getdate(),'admin','${os.hostname()}','${req.ip}','Active')`)
             res.send('Added')
         } else {
@@ -62,7 +62,7 @@ async function showunit(req, res) {
     // console.log(sno)
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from tbl_unit where sno = ${sno}`)
+        const result = await sql.query(`select * from FINSDB.dbo.tbl_unit where sno = ${sno}`)
         res.send(result.recordset[0])
     }
     catch (err) {
@@ -78,7 +78,7 @@ async function UpdateUnit(req, res) {
     // console.log(sno,unit_name,unit_symbol)
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`update tbl_unit set unit_name = '${unit_name}',unit_symbol = '${unit_symbol}'
+        const result = await sql.query(`update FINSDB.dbo.tbl_unit set unit_name = '${unit_name}',unit_symbol = '${unit_symbol}'
                                                                       ,update_date_time=getdate(),update_user_name='Admin',update_system_name='${os.hostname()}',update_ip_address='${req.ip}' where sno = '${sno}'`)
         res.send('Updated')
     }

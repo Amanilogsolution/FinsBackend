@@ -24,9 +24,9 @@ const InsertBank = async (req, res) => {
     console.log(req.body)
 try{
     await sql.connect(sqlConfig)
-    const duplicate = await sql.query(`select * from tbl_bankmaster where account_no='${account_no}'`)
+    const duplicate = await sql.query(`select * from FINSDB.dbo.tbl_bankmaster where account_no='${account_no}'`)
     if(!duplicate.recordset.length){
-         const result = await sql.query(`insert into tbl_bankmaster (account_code,bank_name,account_no,address_line1,address_line2,state,city,pincode,ifsc_code,description,bank_uuid,status,ac_type,acname,add_date_time,add_user_name,add_system_name,add_ip_address)
+         const result = await sql.query(`insert into FINSDB.dbo.tbl_bankmaster (account_code,bank_name,account_no,address_line1,address_line2,state,city,pincode,ifsc_code,description,bank_uuid,status,ac_type,acname,add_date_time,add_user_name,add_system_name,add_ip_address)
                     values('${account_code}','${bank_name}','${account_no}','${address_line1}','${address_line2}','${state}','${city}','${pincode}','${ifsc_code}','${description}','${uuid}','Active','${actype}','${acname}',getdate(),'Aman','${os.hostname()}','${req.ip}')`)
     res.send('Added')
  }else{
@@ -42,7 +42,7 @@ catch(err){
 const TotalBanks = async (req, res) => {
     try{
         await sql.connect(sqlConfig)
-        const result = await sql.query(`SELECT * from tbl_bankmaster`)
+        const result = await sql.query(`SELECT * from FINSDB.dbo.tbl_bankmaster`)
         res.send(result.recordset)
     }
     catch(err){
@@ -55,7 +55,7 @@ const DeleteBank = async (req, res) => {
     const status = req.body.status;
     try{
         await sql.connect(sqlConfig)
-        const result = await sql.query(`update tbl_bankmaster set status='${status}' where sno='${sno}'`)
+        const result = await sql.query(`update FINSDB.dbo.tbl_bankmaster set status='${status}' where sno='${sno}'`)
         res.send('Deleted')
     }
     catch(err){
@@ -67,7 +67,7 @@ const DeleteBank = async (req, res) => {
         const sno = req.body.sno
         try{
             await sql.connect(sqlConfig)
-            const result = await sql.query(`select * from tbl_bankmaster where sno = ${sno}`)
+            const result = await sql.query(`select * from FINSDB.dbo.tbl_bankmaster where sno = ${sno}`)
             res.send(result.recordset[0])
         }
         catch(err){
@@ -95,7 +95,7 @@ const DeleteBank = async (req, res) => {
  
     try{
         await sql.connect(sqlConfig)
-        const result = await sql.query(`update tbl_bankmaster set account_code='${account_code}',bank_name='${bank_name}',account_no='${account_no}',address_line1='${address_line1}',address_line2='${address_line2}',state='${state}',city='${city}',pincode=${pincode},ifsc_code='${ifsc_code}',ac_type='${type}',acname='${acname}',description='${description}',update_date_time=getdate(),update_user_name='Rupesh',update_system_name='${os.hostname()}',update_ip_address='${req.ip}' where sno='${sno}'`)
+        const result = await sql.query(`update FINSDB.dbo.tbl_bankmaster set account_code='${account_code}',bank_name='${bank_name}',account_no='${account_no}',address_line1='${address_line1}',address_line2='${address_line2}',state='${state}',city='${city}',pincode=${pincode},ifsc_code='${ifsc_code}',ac_type='${type}',acname='${acname}',description='${description}',update_date_time=getdate(),update_user_name='Rupesh',update_system_name='${os.hostname()}',update_ip_address='${req.ip}' where sno='${sno}'`)
         res.send('Updated')
     }
     catch(err){

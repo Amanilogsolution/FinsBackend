@@ -6,7 +6,7 @@ const uuidv1 = require("uuid/v1");
 const user = async (req, res) => {
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from tbl_usermaster order by sno desc`)
+        const result = await sql.query(`select * from FINSDB.dbo.tbl_usermaster order by sno desc`)
         res.send(result.recordset)
     } catch (err) {
         console.log(err)
@@ -30,7 +30,7 @@ const InsertUser = async (req, res) => {
 
     try{
         await sql.connect(sqlConfig)
-        const result = await sql.query(`insert into tbl_usermaster (employee_name,role,warehouse,user_name,password,email_id,phone,operate_mode,status,customer,reporting_to,designation,two_factor_authentication,user_uuid,add_date_time,add_user_name,add_system_name,add_ip_address)
+        const result = await sql.query(`insert into FINSDB.dbo.tbl_usermaster (employee_name,role,warehouse,user_name,password,email_id,phone,operate_mode,status,customer,reporting_to,designation,two_factor_authentication,user_uuid,add_date_time,add_user_name,add_system_name,add_ip_address)
         values('${employee_name}','${role}','${warehouse}','${username}','${password}','${email_id}','${phone}','${operatemode}','Active','${customer}','${reporting_to}','${designation}','${two_factor_authentication}','${uuid}',getdate(),'admin','rupesh','${req.ip}')`)
         res.send('Added')
     }
@@ -42,7 +42,7 @@ async function showuser(req,res){
     const sno = req.body.sno
     try{
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from tbl_usermaster where sno = ${sno}`)
+        const result = await sql.query(`select * from FINSDB.dbo.tbl_usermaster where sno = ${sno}`)
         res.send(result.recordset[0])
         }
         catch(err){
@@ -67,7 +67,7 @@ async function updateuser(req,res){
 
     try{
         await sql.connect(sqlConfig)
-        const result = await sql.query(`update tbl_usermaster set 
+        const result = await sql.query(`update FINSDB.dbo.tbl_usermaster set 
         employee_name='${employee_name}',role='${role}',
         warehouse='${warehouse}',user_name='${user_name}',
         password='${password}',email_id='${email_id}',phone='${phone}',
@@ -88,7 +88,7 @@ async function deleteuser(req,res){
     const status = req.body.status
     try{
         await sql.connect(sqlConfig)
-        const result = await sql.query(`update tbl_usermaster set status='${status}' where sno = ${sno}`)
+        const result = await sql.query(`update FINSDB.dbo.tbl_usermaster set status='${status}' where sno = ${sno}`)
         res.send('done')
         }
         catch(err){

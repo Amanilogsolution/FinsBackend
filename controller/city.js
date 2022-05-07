@@ -8,7 +8,7 @@ const uuidv1 = require("uuid/v1");
 const city = async (req, res) => {
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from tbl_cities order by sno desc`)
+        const result = await sql.query(`select * from FINSDB.dbo.tbl_cities order by sno desc`)
         res.send(result.recordset)
     } catch (err) {
         console.log(err)
@@ -23,10 +23,10 @@ const insertCity = async (req, res) => {
     console.log(city_id, city_name, state_name,country_name)
     try {
         await sql.connect(sqlConfig)
-        const duplicate = await sql.query(`select * from tbl_cities where city_id='${city_id}' OR city_name='${city_name}'`)
+        const duplicate = await sql.query(`select * from FINSDB.dbo.tbl_cities where city_id='${city_id}' OR city_name='${city_name}'`)
         console.log(duplicate.recordset[0])
         if(!duplicate.recordset.length){
-                     const result = await sql.query(`insert into tbl_cities (city_id,city_name,state_name,country_name,cities_uuid,add_date_time,add_user_name,add_system_name,add_ip_address,status)
+                     const result = await sql.query(`insert into FINSDB.dbo.tbl_cities (city_id,city_name,state_name,country_name,cities_uuid,add_date_time,add_user_name,add_system_name,add_ip_address,status)
                         values('${city_id}','${city_name}','${state_name}','${country_name}','${uuid}',getdate(),'admin','${os.hostname()}','${req.ip}','Active')`)
         res.send('Added')
         }else{
@@ -45,7 +45,7 @@ const deleteCity = async (req, res) => {
     console.log(sno, status)
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`update tbl_cities set status='${status}' where sno = ${sno}`)
+        const result = await sql.query(`update FINSDB.dbo.tbl_cities set status='${status}' where sno = ${sno}`)
         res.send('done')
     }
     catch (err) {
@@ -57,7 +57,7 @@ async function showcity(req,res){
     const sno = req.body.sno
     try{
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from tbl_cities where sno = ${sno}`)
+        const result = await sql.query(`select * from FINSDB.dbo.tbl_cities where sno = ${sno}`)
         res.send(result.recordset[0])
         }
         catch(err){
@@ -74,7 +74,7 @@ async function updateCity(req,res){
     console.log(city_id, city_name, state_name,country_name)
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`update tbl_cities set city_id=${city_id},city_name='${city_name}',state_name='${state_name}',country_name='${country_name}',update_date_time=getdate(),update_user_name='admin',update_system_name='${os.hostname()}',update_ip_address='${req.ip}',status='Active' where sno = ${sno}`)
+        const result = await sql.query(`update FINSDB.dbo.tbl_cities set city_id=${city_id},city_name='${city_name}',state_name='${state_name}',country_name='${country_name}',update_date_time=getdate(),update_user_name='admin',update_system_name='${os.hostname()}',update_ip_address='${req.ip}',status='Active' where sno = ${sno}`)
         res.send('Updated')
     }
     catch (err) {
@@ -86,7 +86,7 @@ const getCity = async (req, res) => {
     console.log(state_name)
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select city_name from tbl_cities where state_name = '${state_name}'`)
+        const result = await sql.query(`select city_name from FINSDB.dbo.tbl_cities where state_name = '${state_name}'`)
         res.send(result.recordset)
     }
     catch (err) {
@@ -94,5 +94,31 @@ const getCity = async (req, res) => {
     }
 }
 
+const ImportCity = (req, res) => {
+    const datas = req.body.data;
+    // let duplicatedate = [];
 
-module.exports = {city,insertCity,deleteCity,showcity,updateCity,getCity}
+    sql.connect(sqlConfig).then(() => {
+
+        sql.query(`select * from FINSDB.dbo.tbl_cities where city_id in ('${datas.map(data => data.city_id).join("', '")}') OR city_name in ('${datas.map(data => data.city_name).join(', ')}')')`)
+            .then((resp) => {
+                // console.log(resp.rowsAffected[0])
+                if (resp.rowsAffected[0] > 0)
+                    res.send(resp.recordset.map(item => ({ "city_id": item.city_id, "city_name": item.city_name})))
+                else {
+
+                    sql.query(`INSERT INTO FINSDB.dbo.tbl_cities (city_id,city_name,state_name,country_name,status,add_date_time,add_user_name,add_system_name,add_ip_address,cities_uuid) 
+                    VALUES ${datas.map(item => `('${item.city_id}','${item.city_name}','${item.state_name}','${item.state_type}','${item.country_name}','Active',getdate(),'Admin','${os.hostname()}','${req.ip}','${uuidv1()}')`).join(', ')}`)
+                    res.send("Data Added")
+                }
+            })
+
+        // console.log(duplicatedate)
+
+    })
+}
+
+
+
+
+module.exports = {city,insertCity,deleteCity,showcity,updateCity,getCity,ImportCity}

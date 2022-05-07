@@ -48,7 +48,7 @@ const InsertVendor = async (req, res) => {
 try{
     await sql.connect(sqlConfig)
     const result = await sql.query
-    (`insert into tbl_new_vendor(mast_id,vend_id,vend_name,
+    (`insert into FINSDB.dbo.tbl_new_vendor(mast_id,vend_id,vend_name,
         company_name,vend_display_name,vend_email,vend_work_phone,vend_phone,skype_detail,designation,department,
         website,gst_treatment,gstin_uin,pan_no,source_of_supply,currency,
         opening_balance,payment_terms,tds,enable_portal,portal_language,facebook_url,twitter_url,
@@ -76,7 +76,7 @@ catch(err){
 const showVendor = async(req,res) => {
     try{
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from tbl_new_vendor order by sno desc`)
+        const result = await sql.query(`select * from FINSDB.dbo.tbl_new_vendor order by sno desc`)
         res.send(result.recordset)
     }
     catch(err){
@@ -89,7 +89,7 @@ async function DeleteVendor(req,res){
     const status = req.body.status
     try{
         await sql.connect(sqlConfig)
-        const result = await sql.query(`update tbl_new_vendor set status='${status}' where sno = ${sno}`)
+        const result = await sql.query(`update FINSDB.dbo.tbl_new_vendor set status='${status}' where sno = ${sno}`)
         res.send('done')
         }
         catch(err){
@@ -102,7 +102,7 @@ async function Vendor(req,res){
     console.log(sno)
     try{
         await sql.connect(sqlConfig)
-        const result = await sql.query(`Select * from tbl_new_vendor where sno = ${sno}`)
+        const result = await sql.query(`Select * from FINSDB.dbo.tbl_new_vendor where sno = ${sno}`)
         res.send(result.recordset[0])
     }catch(err){
         console.log(err)
@@ -126,7 +126,7 @@ async function UpdateVendor(req,res){
     try{
         await sql.connect(sqlConfig)
         const result = await sql.query(`
-          update tbl_new_vendor set vend_email='${vend_email}',vend_work_phone='${vend_work_phone}',vend_phone='${vend_phone}',
+          update FINSDB.dbo.tbl_new_vendor set vend_email='${vend_email}',vend_work_phone='${vend_work_phone}',vend_phone='${vend_phone}',
           contact_person_name='${contact_person_name}',contact_person_email='${contact_person_email}',contact_person_work_phone='${contact_person_work_phone}',
           contact_person_phone='${contact_person_phone}',contact_person_skype='${contact_person_skype}',contact_person_designation='${contact_person_designation}',
           contact_person_department='${contact_person_department}',remark='${remark}',update_date_time=getdate(),update_user_name='Aman',
