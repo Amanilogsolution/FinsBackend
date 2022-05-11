@@ -5,7 +5,7 @@ const uuidv1 = require("uuid/v1");
 
 
 async function TotalUnit(req, res) {
-    console.log('Fins',req.body.org)
+    // console.log('Fins',req.body.org)
     const org = req.body.org
     try {
         await sql.connect(sqlConfig)
@@ -89,5 +89,27 @@ async function UpdateUnit(req, res) {
     }
 }
 
+const ImportUnit = (req, res) => {
+    const datas = req.body.data;
+    const org = req.body.org;
+    console.log("Back org-",org)
 
-module.exports = { TotalUnit, deleteUnit, Unit, showunit, UpdateUnit }
+    sql.connect(sqlConfig).then(() => {
+
+        sql.query(`select * from ${org}.dbo.tbl_unit where unit_name in ('${datas.map(data => data.unit_name).join("', '")}') OR unit_symbol in ('${datas.map(data => data.unit_symbol).join("', '")}')`)
+            .then((resp) => {
+                console.log(resp.rowsAffected[0])
+                if (resp.rowsAffected[0] > 0)
+                    res.send(resp.recordset.map(item => ({ "unit_name": item.unit_name, "unit_symbol": item.unit_symbol})))
+                else {
+
+                    sql.query(`INSERT INTO ${org}.dbo.tbl_unit (unit_name,unit_symbol,status,add_date_time,add_user_name,add_system_name,add_ip_address,unit_uuid) 
+                    VALUES ${datas.map(item => `('${item.unit_name}','${item.unit_symbol}','Active',getdate(),'Admin','${os.hostname()}','${req.ip}','${uuidv1()}')`).join(', ')}`)
+                    res.send("Data Added")
+                }
+            })
+
+    })
+}
+
+module.exports = { TotalUnit, deleteUnit, Unit, showunit, UpdateUnit,ImportUnit }

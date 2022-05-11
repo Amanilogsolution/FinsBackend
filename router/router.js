@@ -58,6 +58,8 @@ router.post('/unit',unitController.Unit)
 router.post('/showunit',checkAuth,unitController.showunit)
 router.post('/updateunit',unitController.UpdateUnit)
 router.post('/deleteunit',unitController.deleteUnit)
+router.post('/importunit',unitController.ImportUnit)
+
 
 router.get('/totalbank',bankController.TotalBanks)
 router.post('/addbank',bankController.InsertBank)
@@ -104,6 +106,7 @@ router.post('/updatevendaddress', AddressController.UpdateVendAddress);
 router.post('/userlogin',LoginController.User_login)
 router.post('/userlogout',LoginController.User_logout)
 router.post('/InsertUserLogin',LoginController.InsertUserLogin)
+router.post('/ShowUserLogin',LoginController.showLoginuser)
 
 router.post('/SchemaCreate',OrganisationController.Insertorg)
 

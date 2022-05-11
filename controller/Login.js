@@ -14,14 +14,16 @@ const User_login = async (req,res) => {
         const result = await sql.query(`select * from FINSDB.dbo.tbl_Login where user_id='${user_id}' and user_password = '${user_password}'`)
         if(result.recordset.length){
             const Login = await sql.query(`update FINSDB.dbo.tbl_Login set comp_ip='${req.ip}',login_time=GETDATE(),status='Login'  WHERE user_id = '${user_id}'`) 
-           const token = jwt.sign({user_id,user_password},process.env.JWT_KEY,{ expiresIn: 60*60 })
+           const token = jwt.sign({user_id,user_password},process.env.JWT_KEY,{ expiresIn: 5 * 24 * 60 * 60})
             res.status(200).send({
                 status:"Success",
                 token:token,
                 result:result.recordset[0].org_db_name,
                 result2:result.recordset[0].user_name,
                 result3:result.recordset[0].org_name,
-                expiresIn:  60
+                result4:result.recordset[0].user_id,
+
+                expiresIn: 5 * 24 * 60 * 60
             })
         }else{
             res.send({
@@ -66,7 +68,7 @@ const User_logout = async(req,res)=>{
     console.log(user_id)
     try{
         await sql.connect(sqlConfig)
-        const result = await sql.query(`update FINSDB.dbo.tbl_Login set logout_time=GETDATE(),status='Logout'  WHERE user_id = '${user_id}'`)
+        const result = await sql.query(`update FINSDB.dbo.tbl_Login set logout_time=GETDATE(),status='Logout'  WHERE user_name = '${user_id}'`)
         res.status(200).send({
             status:"Logout"
         })
@@ -76,4 +78,17 @@ const User_logout = async(req,res)=>{
     }
 }
 
-module.exports = {User_login,User_logout,InsertUserLogin}
+async function showLoginuser(req,res){
+    const user_id = req.body.user_id
+    console.log(user_id)
+    try{
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`select * from FINSDB.dbo.tbl_usermaster where user_name = '${user_id}'`)
+        res.send(result.recordset[0])
+        }
+        catch(err){
+            console.log(err)
+            }
+          }
+
+module.exports = {User_login,User_logout,InsertUserLogin,showLoginuser}
