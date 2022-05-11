@@ -25,13 +25,16 @@ const InsertUser = async (req, res) => {
     const customer = req.body.customer;
     const reporting_to = req.body.reporting_to;
     const designation = req.body.designation;
+    const user_profile_url = 'https://thispersondoesnotexist.com/image'
     const two_factor_authentication = req.body.two_factor_authentication;
+    console.log(user_profile_url)
+     
     const uuid = uuidv1()
 
     try{
         await sql.connect(sqlConfig)
-        const result = await sql.query(`insert into FINSDB.dbo.tbl_usermaster (employee_name,role,warehouse,user_name,password,email_id,phone,operate_mode,status,customer,reporting_to,designation,two_factor_authentication,user_uuid,add_date_time,add_user_name,add_system_name,add_ip_address)
-        values('${employee_name}','${role}','${warehouse}','${username}','${password}','${email_id}','${phone}','${operatemode}','Active','${customer}','${reporting_to}','${designation}','${two_factor_authentication}','${uuid}',getdate(),'admin','rupesh','${req.ip}')`)
+        const result = await sql.query(`insert into FINSDB.dbo.tbl_usermaster (employee_name,role,warehouse,user_name,password,email_id,phone,operate_mode,status,customer,reporting_to,designation,two_factor_authentication,user_uuid,add_date_time,add_user_name,add_system_name,add_ip_address,user_profile_url)
+        values('${employee_name}','${role}','${warehouse}','${username}','${password}','${email_id}','${phone}','${operatemode}','Active','${customer}','${reporting_to}','${designation}','${two_factor_authentication}','${uuid}',getdate(),'admin','rupesh','${req.ip}','${user_profile_url}')`)
         res.send('Added')
     }
     catch(err){
@@ -95,6 +98,8 @@ async function deleteuser(req,res){
             console.log(err)
             }
          }
+
+         
 
     
 module.exports={user,InsertUser,showuser,updateuser,deleteuser}

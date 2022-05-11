@@ -17,6 +17,7 @@ const Token = require('../controller/Token')
 const OrganisationController = require('../controller/Org')
 const NewdbController = require('../controller/Newdb')
 const OrgTableController = require('../controller/Org_table')
+const LocationController = require('../controller/Location')
 
 router.post('/newdb', NewdbController.Newdb);
 
@@ -52,7 +53,7 @@ router.post('/updatecity',cityController.updateCity)
 router.post('/getcity',cityController.getCity)
 router.post('/importcity',cityController.ImportCity)
 
-router.get('/totalunit',checkAuth,unitController.TotalUnit)
+router.post('/totalunit',checkAuth,unitController.TotalUnit)
 router.post('/unit',unitController.Unit)
 router.post('/showunit',checkAuth,unitController.showunit)
 router.post('/updateunit',unitController.UpdateUnit)
@@ -102,6 +103,7 @@ router.post('/updatevendaddress', AddressController.UpdateVendAddress);
 
 router.post('/userlogin',LoginController.User_login)
 router.post('/userlogout',LoginController.User_logout)
+router.post('/InsertUserLogin',LoginController.InsertUserLogin)
 
 router.post('/SchemaCreate',OrganisationController.Insertorg)
 
@@ -109,6 +111,20 @@ router.post('/Token',Token.token)
 router.post('/Totaldata',OrganisationController.InsertTotalTable)
 router.post('/Org_table',OrgTableController.Org_table)
 router.get('/TotalOrganistion',OrgTableController.TotalOrganisation)
+
+router.post('/TotalLocation',LocationController.TotalLocation)
+router.post('/AddLocation',LocationController.AddLocation)
+router.post('/ShowLocation',LocationController.ShowLocation)
+router.post('/UpdateLocation',LocationController.UpdateLocation)
+
+
+router.post('/LocationAddress',LocationController.LocationAddress)
+router.post('/LocationAddress',LocationController.LocationAddress)
+router.post('/UpdateLocationAddress',LocationController.UpdateLocationAddress)
+router.post('/InsertLocationAddress',LocationController.InsertLocationAddress)
+
+
+
 
 
 module.exports = router;

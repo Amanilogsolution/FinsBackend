@@ -24,7 +24,7 @@ const Org_table = async(req,res)=>{
 const TotalOrganisation = async (req,res) =>{
     try{
         await sql.connect(sqlConfig)
-        const result = await sql.query(`SELECT org_name from FINSDB.dbo.org_name`)
+        const result = await sql.query(`SELECT org_name,org_db_name from FINSDB.dbo.org_name`)
         res.send(result.recordset)
     }
     catch(err){

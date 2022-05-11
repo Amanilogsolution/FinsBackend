@@ -5,9 +5,11 @@ const uuidv1 = require("uuid/v1");
 
 
 async function TotalUnit(req, res) {
+    console.log('Fins',req.body.org)
+    const org = req.body.org
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from FINSDB.dbo.tbl_unit order by sno desc`)
+        const result = await sql.query(`select * from ${org}.dbo.tbl_unit order by sno desc`)
         res.send(result.recordset)
         // console.log(res.send(result.recordset))
     }
