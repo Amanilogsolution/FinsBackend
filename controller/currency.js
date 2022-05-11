@@ -8,7 +8,7 @@ const currency = async (req, res) => {
     console.log(org)
     try {
         await sql.connect(sqlConfig)
-        const Organisation = await sql.query(`SELECT * from FINSDB.dbo.org_name where org_name='${org}'`)
+        const Organisation = await sql.query(`SELECT * from FINSDB.dbo.org_name`)
         console.log(Organisation.rowsAffected[0])
         if(Organisation.rowsAffected[0] == 0)
         {
