@@ -1,4 +1,4 @@
-const sql =require('mssql')
+const sql = require('mssql')
 const sqlConfig = require('../config.js')
 const os = require('os')
 const uuidv1 = require("uuid/v1");
@@ -24,36 +24,35 @@ const InsertUser = async (req, res) => {
     const operatemode = req.body.operatemode;
     const customer = req.body.customer;
     const reporting_to = req.body.reporting_to;
+    const user_profile_url = req.body.user_profile_url;
     const designation = req.body.designation;
-    const user_profile_url = 'https://thispersondoesnotexist.com/image'
+    // const user_profile_url = 'https://thispersondoesnotexist.com/image'
     const two_factor_authentication = req.body.two_factor_authentication;
     console.log(user_profile_url)
-     
     const uuid = uuidv1()
-
-    try{
+    try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`insert into FINSDB.dbo.tbl_usermaster (employee_name,role,warehouse,user_name,password,email_id,phone,operate_mode,status,customer,reporting_to,designation,two_factor_authentication,user_uuid,add_date_time,add_user_name,add_system_name,add_ip_address,user_profile_url)
         values('${employee_name}','${role}','${warehouse}','${username}','${password}','${email_id}','${phone}','${operatemode}','Active','${customer}','${reporting_to}','${designation}','${two_factor_authentication}','${uuid}',getdate(),'admin','rupesh','${req.ip}','${user_profile_url}')`)
         res.send('Added')
     }
-    catch(err){
+    catch (err) {
         console.log(err)
     }
 }
-async function showuser(req,res){
+async function showuser(req, res) {
     const sno = req.body.sno
-    try{
+    try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`select * from FINSDB.dbo.tbl_usermaster where sno = ${sno}`)
         res.send(result.recordset[0])
-        }
-        catch(err){
-            console.log(err)
-            }
-          }
+    }
+    catch (err) {
+        console.log(err)
+    }
+}
 
-async function updateuser(req,res){
+async function updateuser(req, res) {
     const sno = req.body.sno
     const employee_name = req.body.employee_name;
     const role = req.body.role;
@@ -68,7 +67,7 @@ async function updateuser(req,res){
     const designation = req.body.designation;
     const two_factor_authentication = req.body.two_factor_authentication;
 
-    try{
+    try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`update FINSDB.dbo.tbl_usermaster set 
         employee_name='${employee_name}',role='${role}',
@@ -80,26 +79,60 @@ async function updateuser(req,res){
          where sno = ${sno}`)
 
         res.send('done')
-        }
-        catch(err){
-            console.log(err)
-            }
-              }
+    }
+    catch (err) {
+        console.log(err)
+    }
+}
 
-async function deleteuser(req,res){
+async function deleteuser(req, res) {
     const sno = req.body.sno
     const status = req.body.status
-    try{
+    try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`update FINSDB.dbo.tbl_usermaster set status='${status}' where sno = ${sno}`)
         res.send('done')
-        }
-        catch(err){
-            console.log(err)
-            }
-         }
+    }
+    catch (err) {
+        console.log(err)
+    }
+}
 
-         
 
-    
-module.exports={user,InsertUser,showuser,updateuser,deleteuser}
+
+const ImportUser = (req, res) => {
+    const datas = req.body.data;
+    const org=req.body.org;
+    const org_name=req.body.org_name;
+     console.log(datas)
+    sql.connect(sqlConfig).then(() => {
+
+        sql.query(`select * from FINSDB.dbo.tbl_usermaster where user_name in ('${datas.map(data => data.user_name).join("', '")}') OR email_id in ('${datas.map(data => data.email_id).join("', '")}') OR phone in ('${datas.map(data => data.phone).join(', ')}')`)
+            .then((resp) => {
+                console.log(resp.rowsAffected[0])
+                if (resp.rowsAffected[0] > 0)
+                    res.send(resp.recordset.map(item => ({ "user_name": item.user_name, "email_id": item.email_id, "phone": item.phone })))
+                else {
+
+                    sql.query(`INSERT into FINSDB.dbo.tbl_usermaster(employee_name,role,warehouse,user_name,password,
+                    email_id,phone,operate_mode,customer,reporting_to,designation,
+                    user_profile_url,two_factor_authentication,status,add_date_time,add_user_name,add_system_name,add_ip_address,user_uuid)
+                    values ${datas.map(item => `('${item.employee_name}','${item.role}','${item.warehouse}','${item.user_name}','${item.password}','${item.email_id}',${item.phone},'${item.operate_mode}','${item.customer}',
+                    '${item.reporting_to}','${item.designation}','${item.user_profile_url}','with otp','Active',getdate(),'Rupesh','${os.hostname()}','${req.ip}','${ uuidv1()}')`).join(',')}
+
+                    insert into FINSDB.dbo.tbl_Login(user_id,user_name,location,comp_name,comp_ip,
+                        user_password,login_uuid,org_name ,org_db_name,user_profile_url)
+                        values ${datas.map(item => `('${item.user_name}','${item.employee_name}','','${org_name}','${req.ip}','${item.password}','${ uuidv1()}','${org_name}','${org}','${item.user_profile_url}')`).join(',')}
+                    
+                    `)
+                    res.send("Data Added")
+                }
+            })
+
+    })
+
+
+}
+
+
+module.exports = { user, InsertUser, showuser, updateuser, deleteuser,ImportUser }

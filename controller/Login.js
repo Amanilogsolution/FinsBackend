@@ -51,14 +51,16 @@ const InsertUserLogin = async (req, res) => {
      
     const uuid = uuidv1()
 
-    try{
+    try
+    {
         await sql.connect(sqlConfig)
         const result = await sql.query(`insert into FINSDB.dbo.tbl_Login(user_id,user_name,location,comp_name,comp_ip,
             user_password,login_uuid,org_name ,org_db_name,user_profile_url)
             values ('${user_id}','${user_name}','${location}','${comp_name}','${req.ip}','${user_password}','${uuid}','${comp_name}','${org_db_name}','${user_profile_url}')`)
         res.send('Added')
     }
-    catch(err){
+    catch(err)
+    {
         console.log(err)
     }
 }

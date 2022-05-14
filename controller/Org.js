@@ -52,4 +52,41 @@ const InsertTotalTable = async(req,res) =>{
     }
 }
 
-module.exports = { Insertorg,InsertTotalTable}
+const ShowOrganisation = async(req,res) =>{
+    const org_name = req.body.org_name
+    console.log(org_name)
+    try{
+        await sql.connect(sqlConfig)
+                const result = await sql.query(`select * from FinsDB.dbo.organisation where org_name = '${org_name}'`)
+                res.send(result.recordset[0])
+
+    }
+    catch(err){
+        res.send(err)
+    }
+}
+const UpdateOrganisation = async(req,res) =>{
+    const org_name = req.body.org_name;
+    const org_contact_name = req.body.org_contact_name;
+    const org_contact_phone = req.body.org_contact_phone;
+    const org_contact_email =req.body.org_contact_email;
+    const org_street = req.body.org_street;
+    const org_city = req.body.org_city;
+    const org_pincode = req.body.org_pincode;
+    const org_gst = req.body.org_gst
+    console.log(org_name,org_contact_name,org_contact_phone,org_contact_email,org_street,org_city,org_pincode,org_gst)
+    try{
+        await sql.connect(sqlConfig)
+                const result = await sql.query(`update FINSDB.dbo.organisation set org_contact_name='${org_contact_name}', org_contact_phone ='${org_contact_phone}',org_contact_email='${org_contact_email}',
+                org_street='${org_street}',org_city='${org_city}',org_pincode='${org_pincode}',org_gst ='${org_gst}',org_logo='' ,update_ip_address='${req.ip}',update_date_time=getdate(),
+                update_user_name='Aman',update_system_name ='${os.hostname()}' where org_name ='${org_name}';
+                `)
+                res.send(result.recordset[0])
+
+    }
+    catch(err){
+        res.send(err)
+    }
+}
+
+module.exports = { Insertorg,InsertTotalTable,ShowOrganisation,UpdateOrganisation}

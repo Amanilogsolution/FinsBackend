@@ -18,6 +18,10 @@ const OrganisationController = require('../controller/Org')
 const NewdbController = require('../controller/Newdb')
 const OrgTableController = require('../controller/Org_table')
 const LocationController = require('../controller/Location')
+const FileUpload = require('../controller/FileUpload')
+const Multer = require('../Middleware/multer')
+
+
 
 router.post('/newdb', NewdbController.Newdb);
 
@@ -61,17 +65,19 @@ router.post('/deleteunit',unitController.deleteUnit)
 router.post('/importunit',unitController.ImportUnit)
 
 
-router.get('/totalbank',bankController.TotalBanks)
+router.post('/totalbank',bankController.TotalBanks)
 router.post('/addbank',bankController.InsertBank)
 router.post('/deletebank',bankController.DeleteBank)
 router.post('/showbank',bankController.ShowBank)
 router.post('/updatebank',bankController.UpdateBank)
+router.post('/importbank',bankController.ImportBank)
 
 router.get('/totaluser',userController.user)
 router.post('/insertuser',userController.InsertUser)
 router.post('/showuser',userController.showuser)
 router.post('/updateuser',userController.updateuser)
 router.post('/deleteuser',userController.deleteuser)
+router.post('/importuser',userController.ImportUser)
 
 router.get('/totalcustomer',customerController.AllCustomer)
 router.post('/deletecustomer',customerController.DeleteCustomer)
@@ -89,6 +95,7 @@ router.get('/showvendor', vendorController.showVendor);
 router.post('/vendor',vendorController.Vendor)
 router.post('/updatevendor',vendorController.UpdateVendor)
 router.get('/vendorid',vendorController.Vendor_id)
+router.post('/importvendor',vendorController.ImportVendor)
 
 router.post('/insertcustaddress', AddressController.InsertCustomerAddress);
 router.post('/insertvendaddress', AddressController.InsertVendorAddress);
@@ -109,6 +116,9 @@ router.post('/InsertUserLogin',LoginController.InsertUserLogin)
 router.post('/ShowUserLogin',LoginController.showLoginuser)
 
 router.post('/SchemaCreate',OrganisationController.Insertorg)
+router.post('/ShowOrganisation',OrganisationController.ShowOrganisation)
+router.post('/UpdateOrganisation',OrganisationController.UpdateOrganisation)
+
 
 router.post('/Token',Token.token)
 router.post('/Totaldata',OrganisationController.InsertTotalTable)
@@ -126,6 +136,7 @@ router.post('/LocationAddress',LocationController.LocationAddress)
 router.post('/UpdateLocationAddress',LocationController.UpdateLocationAddress)
 router.post('/InsertLocationAddress',LocationController.InsertLocationAddress)
 
+router.post('/FileUpload',Multer,FileUpload)
 
 
 

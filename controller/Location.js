@@ -65,7 +65,6 @@ const ShowLocation = async (req, res) => {
     }
 }
 
-
 const LocationAddress = async (req, res) => {
     const org = req.body.org
     const location_id = req.body.location_id
