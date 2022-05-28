@@ -227,6 +227,59 @@ const Newdb = async (req, res) => {
                 status varchar(50) NULL,
                 newcust_uuid varchar(100) NULL
             );
+
+            CREATE TABLE ${dbname}.dbo.tbl_location_master (
+                sno bigint IDENTITY(1,1) NOT NULL,
+                location_name varchar(100) NULL,
+                gstin_no varchar(20) NULL,
+                location_uuid varchar(255) NULL,
+                add_date_time datetime NULL,
+                add_user_name varchar(50) NULL,
+                add_system_name varchar(100) NULL,
+                add_ip_address varchar(30) NULL,
+                update_date_time datetime NULL,
+                update_user_name varchar(50) NULL,
+                update_system_name varchar(100) NULL,
+                status varchar(20) NOT NULL
+            );
+            
+            CREATE TABLE ${dbname}.dbo.tbl_compliance (
+                sno bigint IDENTITY(1,1) NOT NULL,
+                compliance_type nvarchar(150) NULL,
+                nature nvarchar(200) NULL,
+                period nvarchar(50) NULL,
+                period_name nvarchar(10) NULL,
+                from_month date NULL,
+                to_month date NULL,
+                from_applicable nvarchar(50) NULL,
+                due_date date NULL,
+                extended_date date NULL,
+                add_date_time datetime NULL,
+                add_user_name varchar(50) NULL,
+                add_system_name varchar(50) NULL,
+                add_ip_address varchar(30) NULL,
+                update_date_time datetime NULL,
+                update_user_name varchar(50) NULL,
+                update_system_name varchar(100) NULL,
+                update_ip_address varchar(50) NULL,
+                status varchar(30) NULL
+            );
+            
+            CREATE TABLE ${dbname}.dbo.tbl_compliances_type (
+                sno bigint IDENTITY(1,1) NOT NULL,
+                compliance_type varchar(30) NULL,
+                add_date_time datetime NULL,
+                add_user_name varchar(30) NULL,
+                add_system_name varchar(50) NULL,
+                add_ip_address varchar(30) NULL,
+                update_date_time datetime NULL,
+                update_user_name varchar(30) NULL,
+                update_system_name varchar(50) NULL,
+                update_ip_address varchar(50) NULL,
+                status varchar(20) NULL
+            );
+            
+            
             `)
             res.send(
                 {

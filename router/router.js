@@ -20,6 +20,10 @@ const OrgTableController = require('../controller/Org_table')
 const LocationController = require('../controller/Location')
 const FileUpload = require('../controller/FileUpload')
 const Multer = require('../Middleware/multer')
+const ComplianceController = require('../controller/Compliance')
+const ComplianceTypeController = require('../controller/ComplianceType')
+const FincialyearController = require('../controller/Fincialyear')
+
 
 
 
@@ -78,6 +82,8 @@ router.post('/showuser',userController.showuser)
 router.post('/updateuser',userController.updateuser)
 router.post('/deleteuser',userController.deleteuser)
 router.post('/importuser',userController.ImportUser)
+router.post('/updateimage',userController.UpdateImage)
+
 
 router.get('/totalcustomer',customerController.AllCustomer)
 router.post('/deletecustomer',customerController.DeleteCustomer)
@@ -114,27 +120,51 @@ router.post('/userlogin',LoginController.User_login)
 router.post('/userlogout',LoginController.User_logout)
 router.post('/InsertUserLogin',LoginController.InsertUserLogin)
 router.post('/ShowUserLogin',LoginController.showLoginuser)
+router.post('/ChangePassword',LoginController.ChangePassword)
 
-router.post('/SchemaCreate',OrganisationController.Insertorg)
+router.post('/insertorg',OrganisationController.Insertorg)
 router.post('/ShowOrganisation',OrganisationController.ShowOrganisation)
 router.post('/UpdateOrganisation',OrganisationController.UpdateOrganisation)
 
 
 router.post('/Token',Token.token)
-router.post('/Totaldata',OrganisationController.InsertTotalTable)
+// router.post('/Totaldata',OrganisationController.InsertTotalTable)
 router.post('/Org_table',OrgTableController.Org_table)
 router.get('/TotalOrganistion',OrgTableController.TotalOrganisation)
 
-router.post('/TotalLocation',LocationController.TotalLocation)
-router.post('/AddLocation',LocationController.AddLocation)
+router.post('/totallocation',LocationController.TotalLocation)
+router.post('/addlocation',LocationController.AddLocation)
 router.post('/ShowLocation',LocationController.ShowLocation)
-router.post('/UpdateLocation',LocationController.UpdateLocation)
+router.post('/updatelocation',LocationController.UpdateLocation)
 
 
 router.post('/LocationAddress',LocationController.LocationAddress)
 router.post('/LocationAddress',LocationController.LocationAddress)
 router.post('/UpdateLocationAddress',LocationController.UpdateLocationAddress)
 router.post('/InsertLocationAddress',LocationController.InsertLocationAddress)
+router.post('/locationstatus',LocationController.Locationstatus)
+// router.post('/lastlocationid',LocationController.LastLocationid)
+
+router.post('/Showcompliances',ComplianceController.Showcompliances)
+router.post('/insertcompliances',ComplianceController.Insertcompliance)
+router.post('/ShowcompliancesData',ComplianceController.ShowcompliancesData)
+router.post('/Updatecompliance',ComplianceController.Updatecompliance)
+
+
+router.post('/ShowcompliancesType',ComplianceTypeController.ShowcompliancesType)
+router.post('/InsertcomplianceType',ComplianceTypeController.InsertcomplianceType)
+router.post('/ShowcompliancesTypeselect',ComplianceTypeController.ShowcompliancesTypeselect)
+router.post('/UpdatecomplianceType',ComplianceTypeController.UpdatecomplianceType)
+router.post('/compliancesstatus',ComplianceTypeController.Compliancesstatus)
+router.post('/showactivecompliancestype',ComplianceTypeController.ShowActivecompliancesType)
+
+
+
+router.post('/compliancestatus',ComplianceController.Compliancestatus)
+router.post('/compliancesduedate',ComplianceController.Compliancesduedate)
+
+router.post('/showfincialyear',FincialyearController.Showfincialyear)
+
 
 router.post('/FileUpload',Multer,FileUpload)
 

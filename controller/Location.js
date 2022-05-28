@@ -72,7 +72,7 @@ const LocationAddress = async (req, res) => {
     // console.log(`select * from ${org}.dbo.tbl_countries order by sno desc`)
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`SELECT location_name,gstin_no,location_add1,location_add2,location_city,location_pin,from_date ,location_state,location_country from ${org}.dbo.tbl_location_address where location_id='${location_id}' and status='Active'`)
+        const result = await sql.query(`SELECT location_name,gstin_no,location_add1,location_add2,location_city,location_pin,convert(varchar(15),from_date,121) as from_date ,location_state,location_country from ${org}.dbo.tbl_location_address where location_id='${location_id}' and status='Active'`)
         res.send(result.recordset[0])
     } catch (err) {
         console.log(err)
@@ -159,4 +159,36 @@ const UpdateLocationAddress = async(req, res)=> {
     }
 }
 
-module.exports={AddLocation,TotalLocation,LocationAddress,UpdateLocationAddress,ShowLocation,InsertLocationAddress,UpdateLocation}
+
+const Locationstatus = async (req, res) => {
+    const org = req.body.org;
+    const location_id = req.body.location_id;
+    const status = req.body.status;
+    console.log(org,location_id, status)
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`update ${org}.dbo.tbl_location_master set status='${status}' where location_id='${location_id}'`)
+        res.status(200).send("Successfully Updated")
+    }
+    catch (err) {
+        req.status(400).send(err)
+        console.log(err)
+    }
+}
+
+// const LastLocationid = async (req, res) => {
+//     const org = req.body.org;
+  
+//     console.log(org)
+//     try {
+//         await sql.connect(sqlConfig)
+//         const result = await sql.query(`SELECT TOP 1 location_id FROM  ${org}.dbo.tbl_location_master  ORDER BY sno DESC`)
+//          console.log(result)
+//         res.status(200).send(result.recordset[0])
+//     }
+//     catch (err) {
+//         res.status(400).send(err)
+//         console.log(err)
+//     }
+// }
+module.exports={AddLocation,TotalLocation,LocationAddress,UpdateLocationAddress,ShowLocation,InsertLocationAddress,UpdateLocation,Locationstatus}

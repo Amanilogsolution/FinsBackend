@@ -4,53 +4,35 @@ const os = require('os')
 
 async function Insertorg(req, res) {
     const org_name = req.body.org_name;
-    console.log(org_name)
-    // const org_country = req.body.org_country;
-    // const org_state = req.body.org_state;
-    // const org_contactname =req.body.org_contactname;
-    // const org_contact_mobile = req.body.org_contact_mobile;
-    // const org_contact_email = req.body.org_contact_email;
-    // const org_street1 = req.body.org_street1;
-    // const org_street2 = req.body.org_street2;
-    // const org_city = req.body.org_city;
-    // const org_pin = req.body.org_pin;
-    // const org_currency = req.body.org_currency;
-    // const org_lang = req.body.org_lang;
-    // const system_name = os.hostname()
-    try {
+    const org_country = req.body.org_country;
+    const org_state = req.body.org_state;
+    const org_street = req.body.org_street;
+    const org_city = req.body.org_city;
+    const org_pincode = req.body.org_pincode?req.body.org_pincode:null;
+    const org_currency = req.body.org_currency;
+    const org_lang = req.body.org_lang ;
+    const org_gst = req.body.org_gst;
+    const org_contact_name = req.body.org_contact_name;
+    const org_contact_phone = req.body.org_contact_phone?req.body.org_contact_phone:null;
+    const org_contact_email = req.body.org_contact_email;
+    const org_pin = req.body.org_pin
+
+    console.log(org_name, org_country, org_state, org_street,  org_currency, org_lang, org_gst,org_contact_name,org_contact_phone,org_contact_email,org_city, org_pincode)
+    try{
         await sql.connect(sqlConfig)
-        // const result = await sql.query(`insert into Organisation (org_name,org_country,org_state,state_type,country_name,add_date_time,add_user_name,add_system_name,add_ip_address,status)
-        //                 values('${org_name}','${org_country}','${org_state}','${select_type}','${country_name}',getdate(),'admin','${system_name}','${req.ip}','Active')`)
-        const result = await sql.query(`create schema ${org_name}`)
-        if(result){
-            const table = await sql.query(`
-            create table ${org_name}.test (sno bigint NULL)
-            create table ${org_name}.test1 (sno bigint NULL)
-            create table ${org_name}.test2 (sno bigint NULL)
-            `)
-        }
-        res.send(result.record[0])
+        const result = await sql.query(`INSERT into FinsDB.dbo.organisation(org_name,org_country,org_state,org_street,org_city,org_pincode,org_currency,
+            org_lang,org_gst,org_contact_name,org_contact_phone,org_contact_email,add_ip_address,
+            add_date_time,add_user_name,add_system_name,status)
+            values('${org_name}','${org_country}','${org_state}','${org_street}','${org_city}','${org_pin}','${org_currency}','${org_lang}','${org_gst}','${org_contact_name}',
+            ${org_contact_phone},'${org_contact_email}','${req.ip}',getdate(),'Rupesh','${os.hostname()}','Active')`)
+        res.send('done')
     }
-    catch (err) {
-        res.send(err)
-    }
+    catch(err){
+        console.log(err)
+    } 
 }
 
-const InsertTotalTable = async(req,res) =>{
-    const datas = req.body.data;
-    console.log(datas)
-    try{
-        // datas.forEach(async(item) => {
-        // await sql.connect(sqlConfig)
-        // const  result = await sql.query(`insert into dbo.import_test (sno,name,roll) values(${item.sno},'${item.name}','${item.roll}')`)
-    
-        // }
-        // )
-    }
-    catch (err){
-        console.log(err)
-    }
-}
+
 
 const ShowOrganisation = async(req,res) =>{
     const org_name = req.body.org_name
@@ -89,4 +71,4 @@ const UpdateOrganisation = async(req,res) =>{
     }
 }
 
-module.exports = { Insertorg,InsertTotalTable,ShowOrganisation,UpdateOrganisation}
+module.exports = { Insertorg,ShowOrganisation,UpdateOrganisation}

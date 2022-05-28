@@ -9,6 +9,7 @@ const city = async (req, res) => {
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`select * from FINSDB.dbo.tbl_cities order by sno desc`)
+        console.log(result.recordset)
         res.send(result.recordset)
     } catch (err) {
         console.log(err)
