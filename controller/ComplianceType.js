@@ -10,19 +10,20 @@ const ShowcompliancesType = async (req, res) => {
         const result = await sql.query(`select * from ${org}.dbo.tbl_compliances_type `)
         res.send(result.recordset)
     } catch (err) {
-        console.log(err)
+        res.send(err)
 
     }
 }
 
 const ShowActivecompliancesType = async (req, res) => {
     const org = req.body.org
+    console.log("org",org)
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`select * from ${org}.dbo.tbl_compliances_type  where status='Active'`)
         res.send(result.recordset)
     } catch (err) {
-        console.log(err)
+        res.send(err)
 
     }
 }
@@ -35,8 +36,7 @@ const ShowcompliancesTypeselect = async (req, res) => {
         const result = await sql.query(`select * from ${org}.dbo.tbl_compliances_type  where sno=${sno}`)
         res.send(result.recordset[0])
     } catch (err) {
-        console.log(err)
-        // res.send(err)
+        res.send(err)
     }
 }
 
@@ -54,8 +54,7 @@ const InsertcomplianceType = async (req, res) =>{
     }
     catch(err)
     {
-        console.log(err)
-
+        res.send(err)
     }
     
 }
@@ -75,8 +74,7 @@ const UpdatecomplianceType = async (req, res) =>{
     }
     catch(err)
     {
-        console.log(err)
-
+        res.send(err)
     }
     
 }
@@ -89,11 +87,10 @@ const Compliancesstatus = async(req,res) =>{
     try{
       await sql.connect(sqlConfig)
       const result =await sql.query(`update ${org}.dbo.tbl_compliances_type set status='${status}' where sno=${sno}`)
-      res.status(200).send({status:200,message:"updated"})
+      res.status(200).send({message:"updated"})
     }
     catch(err){
-        console.log(err)
-        res.status(400).send({status:200,message:err})
+        res.send(err)
     }
 }
 

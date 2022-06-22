@@ -10,7 +10,6 @@ const Showcompliances = async (req, res) => {
         const result = await sql.query(`select sno,compliance_type,nature,period,period_name,convert(varchar(15),from_month,121) as from_month,convert(varchar(15),to_month,121) as to_month,from_applicable,convert(varchar(15),due_date,121) as due_date,convert(varchar(15),extended_date,121) as extended_date,status  from ${org}.dbo.tbl_compliance order by sno desc`)
         res.send(result.recordset)
     } catch (err) {
-        // console.log(err)
         res.send(err)
 
     }
@@ -99,7 +98,7 @@ const Compliancestatus = async (req, res) => {
         res.status(200).send(result.recordset)
     }
     catch (err) {
-        console.log(err)
+        res.status(err)
     }
 }
 
@@ -118,8 +117,39 @@ const Compliancestatus = async (req, res) => {
     }
 
 }
+const PendingCompliances =async(req,res) =>{
+    const org = req.body.org;
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`select sno,compliance_type,period,document_status,remark,convert(varchar(15),due_date,121) as due_date  from ${org}.dbo.tbl_compliance where status='Active' `)
+        res.status(200).send(result.recordset)
+    }
+    catch (err) {
+        console.log(err)
+    }
 
-    module.exports = { Showcompliances,Insertcompliance,ShowcompliancesData,Updatecompliance,Compliancestatus,Compliancesduedate}
+}
+
+const UpdatePendingCompliances =async(req,res) =>{
+    const due_date = req.body.due_date
+    const org = req.body.org;
+    const remark = req.body.remark;
+    const sno = req.body.sno;
+    const UploadLink = req.body.UploadLink
+    console.log(due_date,org,remark,sno,UploadLink)
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`update ${org}.dbo.tbl_compliance set due_date='${due_date}',remark='${remark}',document_url='${UploadLink}',document_status='true' where sno=${sno}`)
+        res.status(200).send(result)
+    }
+    catch (err) {
+        console.log(err)
+    }
+
+}
+//document_url
+
+    module.exports = { Showcompliances,Insertcompliance,ShowcompliancesData,Updatecompliance,Compliancestatus,Compliancesduedate,PendingCompliances,UpdatePendingCompliances}
 
 
 

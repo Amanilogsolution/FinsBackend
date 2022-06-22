@@ -135,7 +135,7 @@ async function UpdateVendor(req, res) {
         res.send('done')
     }
     catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 
@@ -152,18 +152,20 @@ const Vendor_id = async (req, res) => {
 
 
 const ImportVendor = (req, res) => {
+    const org = req.body.org;
     const datas = req.body.data;
+    const User_id = req.body.User_id;
     console.log(datas)
-    // let duplicatedate = [];
+    
 
     sql.connect(sqlConfig).then(() => {
 
-        sql.query(`select * from FINSDB.dbo.tbl_new_vendor where vend_email in ('${datas.map(data => data.vend_email).join("', '")}') OR vend_phone in ('${datas.map(data => data.vend_phone).join(', ')}') OR gstin_uin in ('${datas.map(data => data.gstin_uin).join("', '")}') OR pan_no in ('${datas.map(data => data.pan_no).join("','")}')`)
+        sql.query(`select * from ${org}.dbo.tbl_new_vendor where vend_email in ('${datas.map(data => data.vend_email).join("', '")}') OR vend_phone in ('${datas.map(data => data.vend_phone).join(', ')}') OR gstin_uin in ('${datas.map(data => data.gstin_uin).join("', '")}') OR pan_no in ('${datas.map(data => data.pan_no).join("','")}')`)
             .then((resp) => {
                 if (resp.rowsAffected[0] > 0)
                     res.send(resp.recordset.map(item => ({ "vend_email": item.vend_email, "vend_phone": item.vend_phone, "gstin_uin": item.gstin_uin, "pan_no": item.pan_no })))
                 else {
-                    sql.query(`insert into FINSDB.dbo.tbl_new_vendor(mast_id,vend_id,vend_name,
+                    sql.query(`insert into ${org}.dbo.tbl_new_vendor(mast_id,vend_id,vend_name,
                         company_name,vend_display_name,vend_email,vend_work_phone,vend_phone,skype_detail,designation,department,
                         website,gst_treatment,gstin_uin,pan_no,source_of_supply,currency,
                         opening_balance,payment_terms,tds,enable_portal,portal_language,facebook_url,twitter_url,
@@ -173,7 +175,7 @@ const ImportVendor = (req, res) => {
                         contact_person_email,contact_person_work_phone,contact_person_phone,contact_person_skype,contact_person_designation,
                         contact_person_department,remark,newvend_uuid,status,add_date_time,add_user_name,add_system_name,add_ip_address)
 
-                        values ${datas.map(item => `('${item.mast_id}','${item.vend_id}','${item.vend_name}','${item.company_name}','${item.vend_display_name}',
+                        values ${datas.map(item => `('${item.mast_id+1}','${item.vend_id}','${item.vend_name}','${item.company_name}','${item.vend_display_name}',
                                     '${item.vend_email}',${item.vend_work_phone},${item.vend_phone},'${item.skype_detail}','${item.designation}',
                                     '${item.department}','${item.website}','${item.gst_treatment}','${item.gstin_uin}','${item.pan_no}',
                                     '${item.source_of_supply}','${item.currency}','${item.opening_balance}','${item.payment_terms}','${item.tds}',
@@ -181,12 +183,11 @@ const ImportVendor = (req, res) => {
                                     '${item.facebook_url}','${item.twitter_url}','${item.billing_address_attention}','${item.billing_address_country}','${item.billing_address_city}',
                                     '${item.billing_address_state}',${item.billing_address_pincode},'${item.billing_address_phone}','${item.billing_address_fax}','${item.contact_person_name}',
                                     '${item.contact_person_email}',${item.contact_person_work_phone},${item.contact_person_phone},'${item.contact_person_skype}','${item.contact_person_designation}',
-                                    '${item.contact_person_department}','${item.remark}','${uuidv1()}','Active',getdate(),'Admin','${os.hostname()}','${req.ip}')`).join(',')}`)
+                                    '${item.contact_person_department}','${item.remark}','${uuidv1()}','Active',getdate(),'${User_id}','${os.hostname()}','${req.ip}')`).join(',')}`)
                     res.send("Data Added")
                 }
             })
 
-        // console.log(duplicatedate)
 
     })
 }

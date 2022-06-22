@@ -18,6 +18,7 @@ const TotalLocation = async (req, res) => {
 
 const AddLocation = async (req, res) => {
     const org = req.body.org
+    const Location_id =req.body.Location_id;
     const location_name = req.body.location_name;
     const gstin_no = req.body.gstin_no;
     const contact_name1 = req.body.contact_name1; 
@@ -38,7 +39,7 @@ const AddLocation = async (req, res) => {
             (location_name,gstin_no,location_id,contact_name1,
                 contact_name2,contact_phone_no1,contact_phone_no2,
                 add_date_time,add_user_name,add_system_name,add_ip_address,status)
-                values('${location_name}','${gstin_no}','${uuid}','${contact_name1}','${contact_name2}',${contact_phone_no1},${contact_phone_no2},
+                values('${location_name}','${gstin_no}','${Location_id}','${contact_name1}','${contact_name2}',${contact_phone_no1},${contact_phone_no2},
                 getdate(),'Rupesh','${os.hostname()}','${req.ip}','Active')`)
             res.send('Added')
         } else {

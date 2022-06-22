@@ -37,28 +37,27 @@ const InsertBank = async (req, res) => {
 
 const TotalBanks = async (req, res) => {
     const org = req.body.org;
-    console.log(org)
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`SELECT * from ${org}.dbo.tbl_bankmaster`)
         res.send(result.recordset)
     }
     catch (err) {
-        2
-        console.log(err)
+        res.send(err)
     }
 }
 
 const DeleteBank = async (req, res) => {
+    const org = req.body.org;
     const sno = req.body.sno;
     const status = req.body.status;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`update FINSDB.dbo.tbl_bankmaster set status='${status}' where sno='${sno}'`)
+        const result = await sql.query(`update ${org}.dbo.tbl_bankmaster set status='${status}' where sno='${sno}'`)
         res.send('Deleted')
     }
     catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 
@@ -107,6 +106,7 @@ const UpdateBank = async (req, res) => {
 const ImportBank = (req, res) => {
     const datas = req.body.data;
     const org = req.body.org;
+    const User_id = req.body.User_id;
 
     sql.connect(sqlConfig).then(() => {
 
@@ -116,14 +116,13 @@ const ImportBank = (req, res) => {
                     res.send(resp.recordset.map(item => ({ "account_no": item.account_no, "ifsc_code": item.ifsc_code })))
                 else {
 
-                    sql.query(`INSERT into ${org}.dbo.tbl_bankmaster (account_code,bank_name,account_no,address_line1,address_line2,state,city,pincode,ifsc_code,description,bank_uuid,status,ac_type,acname,add_date_time,add_user_name,add_system_name,add_ip_address)
-                        VALUES ${datas.map(item => `('${item.account_code}','${item.bank_name}','${item.account_no}','${item.address_line1}','${item.address_line2}','${item.state}','${item.city}',${item.pincode},'${item.ifsc_code}','${item.description}','${uuidv1()}','Active','${item.ac_type}','${item.acname}',getdate(),'Aman','${os.hostname()}','${req.ip}')`).join(',')}
+                    sql.query(`INSERT into ${org}.dbo.tbl_bankmaster (account_code,bank_name,account_no,address_line1,address_line2,branch,state,city,pincode,ifsc_code,description,bank_uuid,status,ac_type,acname,add_date_time,add_user_name,add_system_name,add_ip_address)
+                        VALUES ${datas.map(item => `('${item.account_code}','${item.bank_name}','${item.account_no}','${item.address_line1}','${item.address_line2}','${item.branch}','${item.state}','${item.city}',${item.pincode},'${item.ifsc_code}','${item.description}','${uuidv1()}','Active','${item.ac_type}','${item.acname}',getdate(),'${User_id}','${os.hostname()}','${req.ip}')`).join(',')}
                         `)
                     res.send("Data Added")
                 }
             })
 
-        // console.log(duplicatedate)
 
     })
 }

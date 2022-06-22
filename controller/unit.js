@@ -17,15 +17,30 @@ async function TotalUnit(req, res) {
         res.send(err)
     }
 }
+async function TotalActiveUnit(req, res) {
+    // console.log('Fins',req.body.org)
+    const org = req.body.org
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`select * from ${org}.dbo.tbl_unit where status='Active' order by sno asc`)
+        res.send(result.recordset)
+        // console.log(result);
+    }
+    catch (err) {
+        res.send(err)
+    }
+}
 
 async function deleteUnit(req, res) {
     const sno = req.body.sno;
     const status = req.body.status;
-    // console.log(sno,status)
+    const org = req.body.org
+    console.log(sno,status,org)
+    console.log(`update ${org}.dbo.tbl_unit set status='${status}' where sno = ${sno}`)
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`update FINSDB.dbo.tbl_unit set status='${status}' where sno = ${sno}`)
-        res.send('done')
+        const result = await sql.query(`update ${org}.dbo.tbl_unit set status='${status}' where sno = ${sno}`)
+        res.send(result)
     }
     catch (err) {
         res.send(err)
@@ -37,16 +52,17 @@ async function deleteUnit(req, res) {
 async function Unit(req, res) {
     const unit_name = req.body.unit_name;
     const unit_symbol = req.body.unit_symbol;
+    const org = req.body.org
     const uuid = uuidv1()
-    // console.log(unit_name,unit_symbol)
-    // const system_name = os.hostname()
+  console.log(org)
+   
     try {
         await sql.connect(sqlConfig)
-        const duplicate = await sql.query(`select * from FINSDB.dbo.tbl_unit where unit_name='${unit_name}' OR unit_symbol='${unit_symbol}'`)
+        const duplicate = await sql.query(`select * from ${org}.dbo.tbl_unit where unit_name='${unit_name}' OR unit_symbol='${unit_symbol}'`)
         // console.log(duplicate)
 
         if (!duplicate.recordset.length) {
-            const result = await sql.query(`insert into FINSDB.dbo.tbl_unit (unit_name,unit_symbol,unit_uuid,add_date_time,add_user_name,add_system_name,add_ip_address,status)
+            const result = await sql.query(`insert into ${org}.dbo.tbl_unit (unit_name,unit_symbol,unit_uuid,add_date_time,add_user_name,add_system_name,add_ip_address,status)
                         values('${unit_name}','${unit_symbol}','${uuid}',getdate(),'admin','${os.hostname()}','${req.ip}','Active')`)
             res.send('Added')
         } else {
@@ -61,10 +77,11 @@ async function Unit(req, res) {
 
 async function showunit(req, res) {
     const sno = req.body.sno
+    const org = req.body.org
     // console.log(sno)
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from FINSDB.dbo.tbl_unit where sno = ${sno}`)
+        const result = await sql.query(`select * from ${org}.dbo.tbl_unit where sno = ${sno}`)
         res.send(result.recordset[0])
     }
     catch (err) {
@@ -76,12 +93,12 @@ async function UpdateUnit(req, res) {
     const sno = req.body.sno;
     const unit_name = req.body.unit_name;
     const unit_symbol = req.body.unit_symbol;
+    const org = req.body.org
 
-    // console.log(sno,unit_name,unit_symbol)
+    console.log(sno,unit_name,unit_symbol,org)
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`update FINSDB.dbo.tbl_unit set unit_name = '${unit_name}',unit_symbol = '${unit_symbol}'
-                                                                      ,update_date_time=getdate(),update_user_name='Admin',update_system_name='${os.hostname()}',update_ip_address='${req.ip}' where sno = '${sno}'`)
+        const result = await sql.query(`update ${org}.dbo.tbl_unit set unit_name = '${unit_name}',unit_symbol = '${unit_symbol}',update_date_time=getdate(),update_user_name='Admin',update_system_name='${os.hostname()}',update_ip_address='${req.ip}' where sno = '${sno}'`)
         res.send('Updated')
     }
     catch (err) {
@@ -92,7 +109,6 @@ async function UpdateUnit(req, res) {
 const ImportUnit = (req, res) => {
     const datas = req.body.data;
     const org = req.body.org;
-    console.log("Back org-",org)
 
     sql.connect(sqlConfig).then(() => {
 
@@ -112,4 +128,4 @@ const ImportUnit = (req, res) => {
     })
 }
 
-module.exports = { TotalUnit, deleteUnit, Unit, showunit, UpdateUnit,ImportUnit }
+module.exports = { TotalUnit,TotalActiveUnit, deleteUnit, Unit, showunit, UpdateUnit,ImportUnit }

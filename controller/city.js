@@ -87,7 +87,7 @@ const getCity = async (req, res) => {
     console.log(state_name)
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select city_name from FINSDB.dbo.tbl_cities where state_name = '${state_name}'`)
+        const result = await sql.query(`select city_name from FINSDB.dbo.tbl_cities where state_name = '${state_name}' and status='Active'`)
         res.send(result.recordset)
     }
     catch (err) {
@@ -97,13 +97,11 @@ const getCity = async (req, res) => {
 
 const ImportCity = (req, res) => {
     const datas = req.body.data;
-    // let duplicatedate = [];
 
     sql.connect(sqlConfig).then(() => {
 
         sql.query(`select * from FINSDB.dbo.tbl_cities where city_id in ('${datas.map(data => data.city_id).join("', '")}') OR city_name in ('${datas.map(data => data.city_name).join(', ')}')')`)
             .then((resp) => {
-                // console.log(resp.rowsAffected[0])
                 if (resp.rowsAffected[0] > 0)
                     res.send(resp.recordset.map(item => ({ "city_id": item.city_id, "city_name": item.city_name})))
                 else {
@@ -114,7 +112,6 @@ const ImportCity = (req, res) => {
                 }
             })
 
-        // console.log(duplicatedate)
 
     })
 }
