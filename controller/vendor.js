@@ -4,6 +4,8 @@ const os = require('os')
 const uuidv1 = require("uuid/v1");
 
 const InsertVendor = async (req, res) => {
+    const org = req.body.org;
+    const User_id = req.body.User_id;
     const mast_id = req.body.mast_id;
     const vend_id = req.body.vend_id;
     const vend_name = req.body.vend_name;
@@ -43,12 +45,16 @@ const InsertVendor = async (req, res) => {
     const contact_person_designation = req.body.contact_person_designation;
     const contact_person_department = req.body.contact_person_department;
     const remark = req.body.remark;
+    const year = req.body.year;
+    const increvend = req.body.increvend;
+    const incremvend = req.body.incremvend;
     const uuid = uuidv1()
+    console.log(increvend, incremvend)
 
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query
-            (`insert into FINSDB.dbo.tbl_new_vendor(mast_id,vend_id,vend_name,
+            (`insert into ${org}.dbo.tbl_new_vendor(mast_id,vend_id,vend_name,
         company_name,vend_display_name,vend_email,vend_work_phone,vend_phone,skype_detail,designation,department,
         website,gst_treatment,gstin_uin,pan_no,source_of_supply,currency,
         opening_balance,payment_terms,tds,enable_portal,portal_language,facebook_url,twitter_url,
@@ -56,7 +62,7 @@ const InsertVendor = async (req, res) => {
         billing_address_city,billing_address_state,billing_address_pincode,billing_address_phone,
         billing_address_fax,contact_person_name,
         contact_person_email,contact_person_work_phone,contact_person_phone,contact_person_skype,contact_person_designation,
-        contact_person_department,remark,newvend_uuid,status,add_date_time,add_user_name,add_system_name,add_ip_address)
+        contact_person_department,remark,newvend_uuid,status,add_date_time,add_user_name,add_system_name,add_ip_address,fins_year)
                     values('${mast_id}','${vend_id}','${vend_name}','${company_name}','${vend_display_name}',
                     '${vend_email}','${vend_work_phone}','${vend_phone}','${skype_detail}','${designation}',
                     '${department}','${website}','${gst_treatment}','${gstin_uin}','${pan_no}',
@@ -65,47 +71,55 @@ const InsertVendor = async (req, res) => {
                     '${facebook_url}','${twitter_url}','${billing_address_attention}','${billing_address_country}','${billing_address_city}',
                     '${billing_address_state}','${billing_address_pincode}','${billing_address_phone}','${billing_address_fax}','${contact_person_name}',
                     '${contact_person_email}','${contact_person_work_phone}','${contact_person_phone}','${contact_person_skype}','${contact_person_designation}',
-                    '${contact_person_department}','${remark}','${uuid}','Active',getdate(),'Admin','${os.hostname()}','${req.ip}')`)
-        res.send('Added')
+                    '${contact_person_department}','${remark}','${uuid}','Active',getdate(),'${User_id}','${os.hostname()}','${req.ip}','${year}')`)
+
+        console.log(result)
+
+        // if(result){
+        //     const result1 = await sql.query(`update ilogsolution.dbo.tbl_fin_year set vend_count=1,mvend_count=1 WHERE status='Active';`)
+        //     res.send('Added')
+        // }
     }
     catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 
-const showVendor = async (req, res) => {
+const Vendor = async (req, res) => {
+    const org = req.body.org;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from FINSDB.dbo.tbl_new_vendor order by sno desc`)
+        const result = await sql.query(`select * from ${org}.dbo.tbl_new_vendor order by sno desc`)
         res.send(result.recordset)
     }
     catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 
 async function DeleteVendor(req, res) {
+    const org = req.body.org;
     const sno = req.body.sno
     const status = req.body.status
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`update FINSDB.dbo.tbl_new_vendor set status='${status}' where sno = ${sno}`)
+        const result = await sql.query(`update ${org}.dbo.tbl_new_vendor set status='${status}' where sno = ${sno}`)
         res.send('done')
     }
     catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 
-async function Vendor(req, res) {
+async function showVendor(req, res) {
+    const org = req.body.org;
     const sno = req.body.sno
-    console.log(sno)
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`Select * from FINSDB.dbo.tbl_new_vendor where sno = ${sno}`)
+        const result = await sql.query(`Select * from ${org}.dbo.tbl_new_vendor where sno = ${sno}`)
         res.send(result.recordset[0])
     } catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 
@@ -123,13 +137,15 @@ async function UpdateVendor(req, res) {
     const contact_person_designation = req.body.contact_person_designation
     const contact_person_department = req.body.contact_person_department
     const remark = req.body.remark
+    const org = req.body.org
+    const User_id = req.body.User_id
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`
-          update FINSDB.dbo.tbl_new_vendor set vend_email='${vend_email}',vend_work_phone='${vend_work_phone}',vend_phone='${vend_phone}',
+          update ${org}.dbo.tbl_new_vendor set vend_email='${vend_email}',vend_work_phone='${vend_work_phone}',vend_phone='${vend_phone}',
           contact_person_name='${contact_person_name}',contact_person_email='${contact_person_email}',contact_person_work_phone='${contact_person_work_phone}',
           contact_person_phone='${contact_person_phone}',contact_person_skype='${contact_person_skype}',contact_person_designation='${contact_person_designation}',
-          contact_person_department='${contact_person_department}',remark='${remark}',update_date_time=getdate(),update_user_name='Aman',
+          contact_person_department='${contact_person_department}',remark='${remark}',update_date_time=getdate(),update_user_name='${User_id}',
           update_system_name='${os.hostname()}',update_ip_address='${req.ip}'
            where sno=${sno};`)
         res.send('done')
@@ -140,13 +156,54 @@ async function UpdateVendor(req, res) {
 }
 
 const Vendor_id = async (req, res) => {
+    const org = req.body.org;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`SELECT vend_id from FINSDB.dbo.tbl_new_vendor`)
+        const result = await sql.query(`SELECT vend_id from ${org}.dbo.tbl_new_vendor`)
         res.send(result.recordset)
     }
     catch (err) {
-        console.log(err)
+        res.send(err)
+    }
+}
+
+const VendorMastid = async (req, res) => {
+    const org = req.body.org;
+    const fins_year = req.body.year;
+    console.log("fins_year", fins_year)
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`SELECT DISTINCT(mast_id) from ${org}.dbo.tbl_new_vendor where fins_year=${fins_year} and status='Active'`)
+        res.send(result.recordset)
+    }
+    catch (err) {
+        res.send(err)
+    }
+}
+
+const TotalVendId = async (req, res) => {
+    const org = req.body.org;
+    const mast_id = req.body.mast_id;
+   
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`select count(vend_id) as count from ${org}.dbo.tbl_new_vendor tnv WHERE mast_id='${mast_id}'; `)
+        res.send(result.recordset[0])
+    }
+    catch (err) {
+        res.send(err)
+    }
+}
+const TotalVendor = async (req, res) => {
+    const org = req.body.org;
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`SELECT count(DISTINCT(mast_id)) as count2 from ${org}.dbo.tbl_new_vendor  with (nolock);`)
+        // console.log(result.recordset[0])
+        res.send(result.recordset[0])
+    }
+    catch (err) {
+        res.send(err)
     }
 }
 
@@ -155,16 +212,16 @@ const ImportVendor = (req, res) => {
     const org = req.body.org;
     const datas = req.body.data;
     const User_id = req.body.User_id;
-    console.log(datas)
-    
+
 
     sql.connect(sqlConfig).then(() => {
 
-        sql.query(`select * from ${org}.dbo.tbl_new_vendor where vend_email in ('${datas.map(data => data.vend_email).join("', '")}') OR vend_phone in ('${datas.map(data => data.vend_phone).join(', ')}') OR gstin_uin in ('${datas.map(data => data.gstin_uin).join("', '")}') OR pan_no in ('${datas.map(data => data.pan_no).join("','")}')`)
+        sql.query(`select * from ${org}.dbo.tbl_new_vendor where vend_email in ('${datas.map(data => data.vend_email).join("', '")}') OR vend_phone in ('${datas.map(data => data.vend_phone).join("', '")}') OR gstin_uin in ('${datas.map(data => data.gstin_uin).join("', '")}') OR pan_no in ('${datas.map(data => data.pan_no).join("','")}')`)
             .then((resp) => {
                 if (resp.rowsAffected[0] > 0)
                     res.send(resp.recordset.map(item => ({ "vend_email": item.vend_email, "vend_phone": item.vend_phone, "gstin_uin": item.gstin_uin, "pan_no": item.pan_no })))
                 else {
+
                     sql.query(`insert into ${org}.dbo.tbl_new_vendor(mast_id,vend_id,vend_name,
                         company_name,vend_display_name,vend_email,vend_work_phone,vend_phone,skype_detail,designation,department,
                         website,gst_treatment,gstin_uin,pan_no,source_of_supply,currency,
@@ -175,15 +232,16 @@ const ImportVendor = (req, res) => {
                         contact_person_email,contact_person_work_phone,contact_person_phone,contact_person_skype,contact_person_designation,
                         contact_person_department,remark,newvend_uuid,status,add_date_time,add_user_name,add_system_name,add_ip_address)
 
-                        values ${datas.map(item => `('${item.mast_id+1}','${item.vend_id}','${item.vend_name}','${item.company_name}','${item.vend_display_name}',
-                                    '${item.vend_email}',${item.vend_work_phone},${item.vend_phone},'${item.skype_detail}','${item.designation}',
+                        values ${datas.map(item => `('${item.mast_id}','${item.vend_id}','${item.vend_name}','${item.company_name}','${item.vend_display_name}',
+                                    '${item.vend_email}','${item.vend_work_phone}','${item.vend_phone}','${item.skype_detail}','${item.designation}',
                                     '${item.department}','${item.website}','${item.gst_treatment}','${item.gstin_uin}','${item.pan_no}',
                                     '${item.source_of_supply}','${item.currency}','${item.opening_balance}','${item.payment_terms}','${item.tds}',
                                     'true','English',
                                     '${item.facebook_url}','${item.twitter_url}','${item.billing_address_attention}','${item.billing_address_country}','${item.billing_address_city}',
-                                    '${item.billing_address_state}',${item.billing_address_pincode},'${item.billing_address_phone}','${item.billing_address_fax}','${item.contact_person_name}',
-                                    '${item.contact_person_email}',${item.contact_person_work_phone},${item.contact_person_phone},'${item.contact_person_skype}','${item.contact_person_designation}',
+                                    '${item.billing_address_state}','${item.billing_address_pincode}','${item.billing_address_phone}','${item.billing_address_fax}','${item.contact_person_name}',
+                                    '${item.contact_person_email}','${item.contact_person_work_phone}','${item.contact_person_phone}','${item.contact_person_skype}','${item.contact_person_designation}',
                                     '${item.contact_person_department}','${item.remark}','${uuidv1()}','Active',getdate(),'${User_id}','${os.hostname()}','${req.ip}')`).join(',')}`)
+
                     res.send("Data Added")
                 }
             })
@@ -192,5 +250,5 @@ const ImportVendor = (req, res) => {
     })
 }
 
-module.exports = { InsertVendor, showVendor, DeleteVendor, Vendor, UpdateVendor, Vendor_id, ImportVendor }
+module.exports = { InsertVendor, showVendor, DeleteVendor, Vendor, UpdateVendor, Vendor_id, VendorMastid, TotalVendId, TotalVendor, ImportVendor }
 

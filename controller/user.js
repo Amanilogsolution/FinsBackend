@@ -9,7 +9,7 @@ const user = async (req, res) => {
         const result = await sql.query(`select * from FINSDB.dbo.tbl_usermaster order by sno desc`)
         res.send(result.recordset)
     } catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 
@@ -37,7 +37,7 @@ const InsertUser = async (req, res) => {
         res.send('Added')
     }
     catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 async function showuser(req, res) {
@@ -48,7 +48,7 @@ async function showuser(req, res) {
         res.send(result.recordset[0])
     }
     catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 
@@ -82,7 +82,7 @@ async function updateuser(req, res) {
         res.send('done')
     }
     catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 
@@ -96,7 +96,7 @@ async function deleteuser(req, res) {
         res.send('done')
     }
     catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 
@@ -134,7 +134,6 @@ const ImportUser = (req, res) => {
 async function UpdateImage(req, res) {
     const user_id = req.body.user_id;
     const user_profile_url = req.body.user_profile_url
-    console.log(user_id,user_profile_url)
     try {
         await sql.connect(sqlConfig)
         const Login = await sql.query(`update FINSDB.dbo.tbl_Login set user_profile_url='${user_profile_url}' where user_id ='${user_id}'`)
@@ -143,7 +142,7 @@ async function UpdateImage(req, res) {
         
     }
     catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 

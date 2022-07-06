@@ -5,26 +5,22 @@ const uuidv1 = require("uuid/v1");
 
 
 async function TotalUnit(req, res) {
-    // console.log('Fins',req.body.org)
     const org = req.body.org
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from ${org}.dbo.tbl_unit order by sno desc`)
+        const result = await sql.query(`select * from ${org}.dbo.tbl_unit with (nolock) order by sno desc`)
         res.send(result.recordset)
-        // console.log(res.send(result.recordset))
     }
     catch (err) {
         res.send(err)
     }
 }
 async function TotalActiveUnit(req, res) {
-    // console.log('Fins',req.body.org)
     const org = req.body.org
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from ${org}.dbo.tbl_unit where status='Active' order by sno asc`)
+        const result = await sql.query(`select * from ${org}.dbo.tbl_unit with (nolock) where status='Active' order by sno asc`)
         res.send(result.recordset)
-        // console.log(result);
     }
     catch (err) {
         res.send(err)
@@ -35,8 +31,6 @@ async function deleteUnit(req, res) {
     const sno = req.body.sno;
     const status = req.body.status;
     const org = req.body.org
-    console.log(sno,status,org)
-    console.log(`update ${org}.dbo.tbl_unit set status='${status}' where sno = ${sno}`)
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`update ${org}.dbo.tbl_unit set status='${status}' where sno = ${sno}`)
@@ -54,12 +48,10 @@ async function Unit(req, res) {
     const unit_symbol = req.body.unit_symbol;
     const org = req.body.org
     const uuid = uuidv1()
-  console.log(org)
    
     try {
         await sql.connect(sqlConfig)
         const duplicate = await sql.query(`select * from ${org}.dbo.tbl_unit where unit_name='${unit_name}' OR unit_symbol='${unit_symbol}'`)
-        // console.log(duplicate)
 
         if (!duplicate.recordset.length) {
             const result = await sql.query(`insert into ${org}.dbo.tbl_unit (unit_name,unit_symbol,unit_uuid,add_date_time,add_user_name,add_system_name,add_ip_address,status)
@@ -78,24 +70,22 @@ async function Unit(req, res) {
 async function showunit(req, res) {
     const sno = req.body.sno
     const org = req.body.org
-    // console.log(sno)
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from ${org}.dbo.tbl_unit where sno = ${sno}`)
+        const result = await sql.query(`select * from ${org}.dbo.tbl_unit with (nolock) where sno = ${sno}`)
         res.send(result.recordset[0])
     }
     catch (err) {
         res.send(err)
     }
 }
-
+    
 async function UpdateUnit(req, res) {
     const sno = req.body.sno;
     const unit_name = req.body.unit_name;
     const unit_symbol = req.body.unit_symbol;
     const org = req.body.org
 
-    console.log(sno,unit_name,unit_symbol,org)
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`update ${org}.dbo.tbl_unit set unit_name = '${unit_name}',unit_symbol = '${unit_symbol}',update_date_time=getdate(),update_user_name='Admin',update_system_name='${os.hostname()}',update_ip_address='${req.ip}' where sno = '${sno}'`)
@@ -114,7 +104,6 @@ const ImportUnit = (req, res) => {
 
         sql.query(`select * from ${org}.dbo.tbl_unit where unit_name in ('${datas.map(data => data.unit_name).join("', '")}') OR unit_symbol in ('${datas.map(data => data.unit_symbol).join("', '")}')`)
             .then((resp) => {
-                console.log(resp.rowsAffected[0])
                 if (resp.rowsAffected[0] > 0)
                     res.send(resp.recordset.map(item => ({ "unit_name": item.unit_name, "unit_symbol": item.unit_symbol})))
                 else {

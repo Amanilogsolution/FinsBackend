@@ -9,7 +9,7 @@ const currency = async (req, res) => {
     try {
         await sql.connect(sqlConfig)
 
-        const result = await sql.query(`select * from ${org}.dbo.tbl_currency order by sno desc`)
+        const result = await sql.query(`select * from ${org}.dbo.tbl_currency with (nolock) order by sno desc`)
         res.send(result.recordset)
     } 
     catch (err) {
@@ -26,7 +26,7 @@ const InsertCurrency = async (req, res) => {
     const uuid = uuidv1()
     try{
         await sql.connect(sqlConfig)
-        const duplicate = await sql.query(`select * from ${org}.dbo.tbl_currency where currency_name='${currency_name}' OR currency_code='${currency_code}'`)
+        const duplicate = await sql.query(`select * from ${org}.dbo.tbl_currency with (nolock) where currency_name='${currency_name}' OR currency_code='${currency_code}'`)
         console.log(duplicate.recordset[0])
         if(!duplicate.recordset.length){
           const result = await sql.query(`insert into ${org}.dbo.tbl_currency (country_name,country_code,currency_name,currency_code,currency_uuid,add_date_time,add_user_name,add_system_name,add_ip_address,status)
@@ -77,7 +77,7 @@ async function ShowCurrency(req, res) {
     const org = req.body.org;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from ${org}.dbo.tbl_currency where sno = ${sno}`)
+        const result = await sql.query(`select * from ${org}.dbo.tbl_currency with (nolock) where sno = ${sno}`)
         res.send(result.recordset[0])
     }
     catch (err) {

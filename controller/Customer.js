@@ -9,7 +9,7 @@ const AllCustomer = async (req, res) => {
     const org= req.body.org;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`SELECT * from ${org}.dbo.tbl_new_customer order by sno desc`)
+        const result = await sql.query(`SELECT * from ${org}.dbo.tbl_new_customer with (nolock) order by sno desc`)
         res.send(result.recordset)
     }
     catch (err) {
@@ -111,7 +111,7 @@ const AddCustomer = async (req, res) => {
                         '${req.ip}','${uuid}');`)
                         
             const result2 = await sql.query(`update ${org}.dbo.tbl_fin_year set cust_totalid='${getnewval}' where sno=(SELECT MAX(sno) FROM tbl_fin_year)`)
-            res.send('Updated')
+            // res.send('Updated')
 
             res.send('Added')
 
@@ -120,7 +120,7 @@ const AddCustomer = async (req, res) => {
         }
     }
     catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 
@@ -189,7 +189,7 @@ const Customer_id = async (req, res) => {
     const org = req.body.org;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`SELECT cust_id FROM ${org}.dbo.tbl_new_customer`)
+        const result = await sql.query(`SELECT cust_id FROM ${org}.dbo.tbl_new_customer with (nolock)`)
         res.send(result.recordset)
     }
     catch (err) {
@@ -202,7 +202,7 @@ const Customername= async (req, res) => {
     const cust_id = req.body.cust_id;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select cust_name from ${org}.dbo.tbl_new_customer where cust_id='${cust_id}' and status='Active'`)
+        const result = await sql.query(`select cust_name from ${org}.dbo.tbl_new_customer with (nolock) where cust_id='${cust_id}' and status='Active'`)
         res.send(result.recordset[0])
     }
     catch (err) {
@@ -214,7 +214,7 @@ const Unique_Cust_id = async (req, res) => {
     const org=req.boy.org;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`SELECT cust_totalid,year FROM ${org}.dbo.tbl_fin_year  WHERE sno=(SELECT MAX(sno) FROM ${org}.dbo.tbl_fin_year)`)
+        const result = await sql.query(`SELECT cust_totalid,year FROM ${org}.dbo.tbl_fin_year  with (nolock) WHERE sno=(SELECT MAX(sno) FROM ${org}.dbo.tbl_fin_year)`)
         res.send(result.recordset[0])
 
     }
@@ -227,7 +227,7 @@ const Lastcust_id = async (req, res) => {
     const org= req.body.org;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`SELECT cust_id FROM ${org}.dbo.tbl_new_customer  WHERE sno=(SELECT MAX(sno) FROM ${org}.dbo.tbl_new_customer)`)
+        const result = await sql.query(`SELECT cust_id FROM ${org}.dbo.tbl_new_customer with (nolock) WHERE sno=(SELECT MAX(sno) FROM ${org}.dbo.tbl_new_customer)`)
 
         res.send(result.recordset[0])
 

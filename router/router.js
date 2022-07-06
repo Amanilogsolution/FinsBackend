@@ -28,11 +28,10 @@ const AccountnameController = require('../controller/AccountName')
 const ItemsController = require('../controller/Items')
 const AccountinfoController = require('../controller/Account-Info')
 const SubCodeController = require('../controller/SubCode')
-
-
+const AccountMinorCodeController = require('../controller/AccountMinorCode')
+const ChartOfAccountMasterController =require('../controller/ChartOfAccountMaster')
 
 router.post('/newdb', NewdbController.Newdb);
-
 router.get('/totalstate', statesController.TotalStates);
 router.post('/deletestate', statesController.deleteState);
 router.post('/state', statesController.state);
@@ -40,8 +39,6 @@ router.post('/showstate', statesController.showstate);
 router.post('/editstate', statesController.EditState);
 router.post('/showactivestate', statesController.showactivestate);
 router.post('/importState', statesController.ImportState);
-
-
 router.post('/totalcountry', countryController.countries);
 router.get('/activecountries', countryController.Activecountries);
 router.post('/insertcountry', countryController.InsertCountry);
@@ -49,7 +46,6 @@ router.post('/showcountry', countryController.showcountry);
 router.post('/updatecountry', countryController.updatecountry);
 router.post('/deletecountry', countryController.deletecountry);
 router.post('/checkimportcountry',countryController.CheckimportCountry)
-
 
 router.post('/currency', currencyController.currency);
 router.post('/insertcurrecy', currencyController.InsertCurrency);
@@ -106,11 +102,15 @@ router.post('/customername',customerController.Customername)
 
 router.post('/insertvendor', vendorController.InsertVendor);
 router.post('/deletevendor', vendorController.DeleteVendor);
-router.get('/showvendor', vendorController.showVendor);
+router.post('/showvendor', vendorController.showVendor);
 router.post('/vendor',vendorController.Vendor)
 router.post('/updatevendor',vendorController.UpdateVendor)
-router.get('/vendorid',vendorController.Vendor_id)
+router.post('/vendorid',vendorController.Vendor_id)
+router.post('/totalvendor',vendorController.TotalVendor)
+router.post('/totalvendid',vendorController.TotalVendId)
 router.post('/importvendor',vendorController.ImportVendor)
+router.post('/vendormastid', vendorController.VendorMastid);
+
 
 router.post('/insertcustaddress', AddressController.InsertCustomerAddress);
 router.post('/insertvendaddress', AddressController.InsertVendorAddress);
@@ -151,11 +151,13 @@ router.post('/updatelocation',LocationController.UpdateLocation)
 
 
 router.post('/LocationAddress',LocationController.LocationAddress)
-router.post('/LocationAddress',LocationController.LocationAddress)
 router.post('/UpdateLocationAddress',LocationController.UpdateLocationAddress)
 router.post('/InsertLocationAddress',LocationController.InsertLocationAddress)
+router.post('/importlocationaddress',LocationController.ImportLocationAddress)
+
 router.post('/locationstatus',LocationController.Locationstatus)
-// router.post('/lastlocationid',LocationController.LastLocationid)
+router.post('/lastlocationid',LocationController.LastLocationid)
+router.post('/importlocationmaster',LocationController.ImportLocationMaster)
 
 router.post('/Showcompliances',ComplianceController.Showcompliances)
 router.post('/insertcompliances',ComplianceController.Insertcompliance)
@@ -163,7 +165,6 @@ router.post('/ShowcompliancesData',ComplianceController.ShowcompliancesData)
 router.post('/Updatecompliance',ComplianceController.Updatecompliance)
 router.post('/pendingcompliances',ComplianceController.PendingCompliances)
 router.post('/updatependingcompliances',ComplianceController.UpdatePendingCompliances)
-
 
 router.post('/ShowcompliancesType',ComplianceTypeController.ShowcompliancesType)
 router.post('/InsertcomplianceType',ComplianceTypeController.InsertcomplianceType)
@@ -174,17 +175,24 @@ router.post('/showactivecompliancestype',ComplianceTypeController.ShowActivecomp
 
 
 router.post('/compliancestatus',ComplianceController.Compliancestatus)
+router.post('/importcompliances',ComplianceController.ImportCompliances)
+
 router.post('/compliancesduedate',ComplianceController.Compliancesduedate)
 
 router.post('/showfincialyear',FincialyearController.Showfincialyear)
+router.post('/addfincialyear',FincialyearController.Addfincialyear)
+router.post('/updatefincialyear',FincialyearController.Updatefincialyear)  
+router.post('/statusfincialyear',FincialyearController.Statusfincialyear)
+router.post('/selectfincialyear',FincialyearController.Selectfincialyear)  
+router.post('/getfincialyearid',FincialyearController.Getfincialyearid)
+router.post('/updatefinancialcount',FincialyearController.Updatefinancialcount)
+
 
 router.post('/insertitems',ItemsController.InsertItems)
 
-
-
 router.post('/FileUpload',Multer,FileUpload)
 
-router.get('/showcoa',ChartOfAccountController.Accounttype)
+router.post('/showcoa',ChartOfAccountController.Accounttype)
 router.post('/parentaccount',ChartOfAccountController.ParentAccount)
 router.post('/parentaccountNumber',ChartOfAccountController.ParentAccountNumber)
 router.post('/addaccountname',ChartOfAccountController.AddAccountName)
@@ -197,6 +205,8 @@ router.post('/insertaccounttype',AccountnameController.InsertAccountType)
 router.post('/totalaccountname',AccountnameController.TotalAccountName)
 router.post('/accountnamestatus',AccountnameController.AccountnameStatus)
 router.post('/selectaccountname',AccountnameController.SelectAccountName)
+router.post('/importaccountname',AccountnameController.ImportAccountName)
+
 
 
 router.post('/allaccountinfo',AccountinfoController.AllAccountInfo)
@@ -206,6 +216,9 @@ router.post('/accountinfostatus',AccountinfoController.AccountInfoStatus)
 router.post('/insertaccountinfo',AccountinfoController.InsertAccountInfo)
 router.post('/selectaccountinfo',AccountinfoController.SelectAccountInfo)
 router.post('/updateaccountinfo',AccountinfoController.UpdateAccountInfo)
+router.post('/importaccountinfo',AccountinfoController.ImportAccountInfo)
+
+
 
 router .post('/showglcode',SubCodeController.GlCode)
 router.post('/glsubcode',SubCodeController.GlSubCode)
@@ -214,8 +227,26 @@ router.post('/showtotalsubcode',SubCodeController.ShowTotalSubCode)
 router.post('/subcodestatus',SubCodeController.SubCodeStatus)
 router.post('/getsubcodedetails',SubCodeController.GetSubCodeDetails)
 router.post('/updatesubcodedetails',SubCodeController.UpdateSubCodeDetails)
+router.post('/importsubcode',SubCodeController.ImportSubcode)
 
+
+router.post('/totalaccountminorcode',AccountMinorCodeController.TotalAccountMinorCode)
+router.post('/accountminorcodestatus',AccountMinorCodeController.AccountMinorCodeStatus)
+router.post('/getaccountminorcode',AccountMinorCodeController.GetAccountMinorCode)
+router.post('/updateaccountminorcode',AccountMinorCodeController.UpdateAccountMinorCode)
+router.post('/importaccountminorcode',AccountMinorCodeController.ImportAccountMinorCode)
+
+
+router.post('/totalchartofaccount',ChartOfAccountMasterController.TotalChartOfAccount)
+router.post('/chartofaccountstatus',ChartOfAccountMasterController.ChartOfAccountStatus)
+router.post('/getchartofaccount',ChartOfAccountMasterController.GetChartOfAccount)
+router.post('/updatechartofaccount',ChartOfAccountMasterController.UpdateChartOfAccount)
+router.post('/importchartofaccount',ChartOfAccountMasterController.ImportChartofAccount)
 
 
 
 module.exports = router;
+
+
+
+

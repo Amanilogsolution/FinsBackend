@@ -6,7 +6,7 @@ const uuidv1 = require("uuid/v1");
 async function TotalStates(req, res) {
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from FINSDB.dbo.tbl_states order by sno desc`)
+        const result = await sql.query(`select * from FINSDB.dbo.tbl_states with (nolock) order by sno desc`)
         res.send(result.recordset)
     }
     catch (err) {
@@ -64,7 +64,7 @@ async function showstate(req, res) {
     const sno = req.body.sno
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from FINSDB.dbo.tbl_states where sno = ${sno}`)
+        const result = await sql.query(`select * from FINSDB.dbo.tbl_states with (nolock) where sno = ${sno}`)
         res.send(result.recordset[0])
     }
     catch (err) {
@@ -77,7 +77,7 @@ async function showactivestate(req, res) {
     console.log('country', country)
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from FINSDB.dbo.tbl_states where country_name = '${country}' and status='Active'`)
+        const result = await sql.query(`select * from FINSDB.dbo.tbl_states with (nolock) where country_name = '${country}' and status='Active'`)
         res.send(result.recordset)
     }
     catch (err) {

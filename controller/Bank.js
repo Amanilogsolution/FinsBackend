@@ -16,14 +16,16 @@ const InsertBank = async (req, res) => {
     const actype = req.body.actype;
     const acname = req.body.acname;
     const description = req.body.description;
+    const User_id = req.body.User_id;
+    const org = req.body.org;
     const uuid = uuidv1()
     console.log(req.body)
     try {
         await sql.connect(sqlConfig)
-        const duplicate = await sql.query(`select * from FINSDB.dbo.tbl_bankmaster where account_no='${account_no}'`)
+        const duplicate = await sql.query(`select * from ${org}.dbo.tbl_bankmaster where account_no='${account_no}'`)
         if (!duplicate.recordset.length) {
-            const result = await sql.query(`insert into FINSDB.dbo.tbl_bankmaster (account_code,bank_name,account_no,address_line1,address_line2,state,city,pincode,ifsc_code,description,bank_uuid,status,ac_type,acname,add_date_time,add_user_name,add_system_name,add_ip_address)
-                    values('${account_code}','${bank_name}','${account_no}','${address_line1}','${address_line2}','${state}','${city}','${pincode}','${ifsc_code}','${description}','${uuid}','Active','${actype}','${acname}',getdate(),'Aman','${os.hostname()}','${req.ip}')`)
+            const result = await sql.query(`insert into ${org}.dbo.tbl_bankmaster (account_code,bank_name,account_no,address_line1,address_line2,state,city,pincode,ifsc_code,description,bank_uuid,status,ac_type,acname,add_date_time,add_user_name,add_system_name,add_ip_address)
+                    values('${account_code}','${bank_name}','${account_no}','${address_line1}','${address_line2}','${state}','${city}','${pincode}','${ifsc_code}','${description}','${uuid}','Active','${actype}','${acname}',getdate(),'${User_id}','${os.hostname()}','${req.ip}')`)
             res.send('Added')
         } else {
             res.send("Already")
@@ -63,13 +65,14 @@ const DeleteBank = async (req, res) => {
 
 const ShowBank = async (req, res) => {
     const sno = req.body.sno
+    const org = req.body.org
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from FINSDB.dbo.tbl_bankmaster where sno = ${sno}`)
+        const result = await sql.query(`select * from ${org}.dbo.tbl_bankmaster where sno = ${sno}`)
         res.send(result.recordset[0])
     }
     catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 const UpdateBank = async (req, res) => {
@@ -89,15 +92,16 @@ const UpdateBank = async (req, res) => {
     const type = req.body.type;
     const acname = req.body.acname;
     const description = req.body.description;
-    console.log(req.body)
+    const org = req.body.org;
+    const User_id = req.body.User_id;
 
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`update FINSDB.dbo.tbl_bankmaster set account_code='${account_code}',bank_name='${bank_name}',account_no='${account_no}',address_line1='${address_line1}',address_line2='${address_line2}',state='${state}',city='${city}',pincode=${pincode},ifsc_code='${ifsc_code}',ac_type='${type}',acname='${acname}',description='${description}',update_date_time=getdate(),update_user_name='Rupesh',update_system_name='${os.hostname()}',update_ip_address='${req.ip}' where sno='${sno}'`)
+        const result = await sql.query(`update ${org}.dbo.tbl_bankmaster set account_code='${account_code}',bank_name='${bank_name}',account_no='${account_no}',address_line1='${address_line1}',address_line2='${address_line2}',state='${state}',city='${city}',pincode=${pincode},ifsc_code='${ifsc_code}',ac_type='${type}',acname='${acname}',description='${description}',update_date_time=getdate(),update_user_name='${User_id}',update_system_name='${os.hostname()}',update_ip_address='${req.ip}' where sno='${sno}'`)
         res.send('Updated')
     }
     catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 
@@ -107,7 +111,7 @@ const ImportBank = (req, res) => {
     const datas = req.body.data;
     const org = req.body.org;
     const User_id = req.body.User_id;
-
+      console.log(datas)
     sql.connect(sqlConfig).then(() => {
 
         sql.query(`select * from ${org}.dbo.tbl_bankmaster where account_no in ('${datas.map(data => data.account_no).join("', '")}') OR ifsc_code in ('${datas.map(data => data.ifsc_code).join("', '")}')`)
@@ -123,7 +127,7 @@ const ImportBank = (req, res) => {
                 }
             })
 
-
+ 
     })
 }
 

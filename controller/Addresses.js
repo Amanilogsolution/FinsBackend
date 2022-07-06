@@ -35,6 +35,8 @@ const InsertCustomerAddress = async (req, res) => {
 //Vendor Add Address
 const InsertVendorAddress = async (req, res) => {
     const vend_id = req.body.vend_id;
+    
+    const billing_address_gstno = req.body.billing_address_gstno;
     const billing_address_attention = req.body.billing_address_attention;
     const billing_address_country = req.body.billing_address_country;
     const billing_address_city = req.body.billing_address_city;
@@ -42,17 +44,19 @@ const InsertVendorAddress = async (req, res) => {
     const billing_address_pincode = req.body.billing_address_pincode;
     const billing_address_phone = req.body.billing_address_phone;
     const billing_address_fax = req.body.billing_address_fax;
+    const org= req.body.org;
+    const User_id= req.body.User_id;
     console.log(vend_id, billing_address_attention, billing_address_country, billing_address_city, billing_address_state, billing_address_pincode, billing_address_phone, billing_address_fax);
 
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`INSERT into FINSDB.dbo.tbl_vend_addresses(vend_id ,billing_address_attention,billing_address_country,billing_address_city,billing_address_state,billing_address_pincode,    
-          billing_address_phone ,billing_address_fax,add_date_time,add_user_name,add_system_name ,add_ip_address ,status )
-          values('${vend_id}','${billing_address_attention}','${billing_address_country}','${billing_address_city}','${billing_address_state}','${billing_address_pincode}','${billing_address_phone}','${billing_address_fax}',getdate(),'Rupesh','${os.hostname()}','${req.ip}','Active')`)
+        const result = await sql.query(`INSERT into ${org}.dbo.tbl_vend_addresses(vend_id ,gst_no,billing_address_attention,billing_address_country,billing_address_city,billing_address_state,billing_address_pincode,    
+          billing_address_phone ,billing_address_fax,add_date_time,add_user_name,add_system_name ,add_ip_address ,status,vendaddress_uuid )
+          values('${vend_id}','${billing_address_gstno}','${billing_address_attention}','${billing_address_country}','${billing_address_city}','${billing_address_state}','${billing_address_pincode}','${billing_address_phone}','${billing_address_fax}',getdate(),'${User_id}','${os.hostname()}','${req.ip}','Active','${uuidv1()}')`)
         res.send('Added')
     }
     catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 const SelectCustAddress = async (req, res) => {
@@ -79,21 +83,21 @@ const TotalCustAddress = async (req, res) => {
         res.send(result.recordset)
     }
     catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 // const TotalCustAddress
 
 const TotalVendAddress = async (req, res) => {
     const vend_id = req.body.vend_id;
-    console.log(vend_id);
+    const org = req.body.org;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`SELECT * from FINSDB.dbo.tbl_vend_addresses WHERE vend_id='${vend_id}';`)
+        const result = await sql.query(`SELECT * from ${org}.dbo.tbl_vend_addresses WHERE vend_id='${vend_id}';`)
         res.send(result.recordset)
     }
     catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 
@@ -114,13 +118,14 @@ const DeleteCustAddress = async (req, res) => {
 const DeleteVendAddress = async (req, res) => {
     const sno = req.body.sno;
     const status = req.body.status;
+    const org = req.body.org;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`UPDATE FINSDB.dbo.tbl_vend_addresses  SET status='${status}' WHERE sno='${sno}'`)
+        const result = await sql.query(`UPDATE ${org}.dbo.tbl_vend_addresses  SET status='${status}' WHERE sno='${sno}'`)
         res.send('Deleted')
     }
     catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 
@@ -139,9 +144,10 @@ const CustAddress = async (req, res) => {
 
 const VendAddress = async (req, res) => {
     const sno = req.body.sno;
+    const org = req.body.org;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`SELECT * from FINSDB.dbo.tbl_vend_addresses where sno='${sno}'`)
+        const result = await sql.query(`SELECT * from ${org}.dbo.tbl_vend_addresses where sno='${sno}'`)
         res.send(result.recordset[0])
     }
     catch (err) {
@@ -173,6 +179,7 @@ const UpdateCustAddress = async (req, res) => {
 const UpdateVendAddress = async (req, res) => {
     const sno = req.body.sno;
     const vend_id = req.body.vend_id;
+    const billing_address_gstno = req.body.billing_address_gstno;
     const billing_address_attention = req.body.billing_address_attention;
     const billing_address_country = req.body.billing_address_country;
     const billing_address_city = req.body.billing_address_city;
@@ -180,15 +187,17 @@ const UpdateVendAddress = async (req, res) => {
     const billing_address_pincode = req.body.billing_address_pincode;
     const billing_address_phone = req.body.billing_address_phone;
     const billing_address_fax = req.body.billing_address_fax;
+    const org = req.body.org;
+    const User_id = req.body.User_id;
     console.log(sno, vend_id, billing_address_attention, billing_address_country, billing_address_city, billing_address_state, billing_address_pincode, billing_address_phone, billing_address_fax);
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`update FINSDB.dbo.tbl_vend_addresses set vend_id='${vend_id}',billing_address_attention='${billing_address_attention}',billing_address_country='${billing_address_country}',billing_address_city='${billing_address_city}',billing_address_state='${billing_address_state}',billing_address_pincode='${billing_address_pincode}',billing_address_phone='${billing_address_phone}',billing_address_fax='${billing_address_fax}',update_date_time=getdate(),update_user_name='Rupesh Kumar',
+        const result = await sql.query(`update ${org}.dbo.tbl_vend_addresses set vend_id='${vend_id}',gst_no='${billing_address_gstno}',billing_address_attention='${billing_address_attention}',billing_address_country='${billing_address_country}',billing_address_city='${billing_address_city}',billing_address_state='${billing_address_state}',billing_address_pincode='${billing_address_pincode}',billing_address_phone='${billing_address_phone}',billing_address_fax='${billing_address_fax}',update_date_time=getdate(),update_user_name='${User_id}',
                 update_system_name='${os.hostname()}',update_ip_address='${req.ip}' where sno='${sno}'`)
         res.send('Updated')
     }
     catch (err) {
-        console.log(err)
+        res.send(err)
     }
 }
 
