@@ -1,10 +1,10 @@
 const sql = require('mssql')
-const sqlConfig = require('../config.js')
+const sqlConfig = require('../../config.js')
 const os = require('os')
 const uuidv1 = require("uuid/v1");
 
 const TotalLocation = async (req, res) => {
-    const org = req.body.org
+    const org = req.body.org;
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`SELECT * from ${org}.dbo.tbl_location_master with (nolock) order by sno desc`)
@@ -23,15 +23,18 @@ const AddLocation = async (req, res) => {
     const contact_name2 = req.body.contact_name2;
     const contact_phone_no1 = req.body.contact_phone_no1;
     const contact_phone_no2 = req.body.contact_phone_no2;
-    const User_id= req.body.User_id;
+    const User_id = req.body.User_id;
+    const fins_year = req.body.fins_year;
+    const country = req.body.country;
+    const state = req.body.state;
 
     try {
 
-        await sql.query(`insert into ${org}.dbo.tbl_location_master (location_name,gstin_no,location_id,contact_name1,
+        const result = await sql.query(`insert into ${org}.dbo.tbl_location_master (location_name,gstin_no,location_id,contact_name1,
                 contact_name2,contact_phone_no1,contact_phone_no2,
-                add_date_time,add_user_name,add_system_name,add_ip_address,status)
+                add_date_time,add_user_name,add_system_name,add_ip_address,status,fins_year,country,state)
                 values('${location_name}','${gstin_no}','${Location_id}','${contact_name1}','${contact_name2}','${contact_phone_no1}','${contact_phone_no2}',
-                getdate(),'${User_id}','${os.hostname()}','${req.ip}','Active')`)
+                getdate(),'${User_id}','${os.hostname()}','${req.ip}','Active','${fins_year}','${country}','${state}')`)
         res.send('Added')
 
     }
@@ -73,14 +76,16 @@ const UpdateLocation = async (req, res) => {
     const contact_name2 = req.body.contact_name2;
     const contact_phone_no1 = req.body.contact_phone_no1;
     const contact_phone_no2 = req.body.contact_phone_no2;
-    const location_id = req.body.location_id
-    const User_id = req.body.User_id
+    const location_id = req.body.location_id;
+    const User_id = req.body.User_id;
+    const country = req.body.country;
+    const state = req.body.state
 
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`update ${org}.dbo.tbl_location_master set location_name='${location_name}',
         gstin_no='${gstin_no}',contact_name1 ='${contact_name1}',contact_name2 ='${contact_name2}',contact_phone_no1='${contact_phone_no1}',contact_phone_no2 ='${contact_phone_no2}',
-        update_date_time=GETDATE(),update_user_name='${User_id}',update_system_name='${os.hostname()}',update_ip_address='${req.ip}' WHERE location_id ='${location_id}';`)
+        update_date_time=GETDATE(),update_user_name='${User_id}',update_system_name='${os.hostname()}',update_ip_address='${req.ip}',country='${country}',state='${state}' WHERE location_id ='${location_id}';`)
         res.send('done')
     }
     catch (err) {
@@ -97,11 +102,11 @@ const InsertLocationAddress = async (req, res) => {
     const location_city = req.body.location_city;
     const location_state = req.body.location_state;
     const location_country = req.body.location_country;
-    const from_date = req.body.from_date
-    const location_id = req.body.location_id
-    const location_pin = req.body.location_pin
-    const to_date = req.body.to_date
-    const User_id= res.body.User_id;
+    const from_date = req.body.from_date;
+    const location_id = req.body.location_id;
+    const location_pin = req.body.location_pin;
+    const to_date = req.body.to_date;
+    const User_id = req.body.User_id;
 
     try {
         await sql.connect(sqlConfig)
@@ -133,7 +138,7 @@ const UpdateLocationAddress = async (req, res) => {
     const from_date = req.body.from_date
     const location_id = req.body.location_id
     const location_pin = req.body.location_pin;
-    const User_id= req.body.User_id;
+    const User_id = req.body.User_id;
 
     try {
         await sql.query(`update ${org}.dbo.tbl_location_address  set location_add1='${location_add1}',location_add2='${location_add2}',
@@ -162,17 +167,31 @@ const Locationstatus = async (req, res) => {
     }
 }
 
-const LastLocationid = async (req, res) => {
+// const LastLocationid = async (req, res) => {
+//     const org = req.body.org;
+//     try {
+//         await sql.connect(sqlConfig)
+//         const result = await sql.query(`SELECT COUNT(location_id) as count FROM ${org}.dbo.tbl_location_master;`)
+//         res.status(200).send(result.recordset[0])
+//     }
+//     catch (err) {
+//         res.send(err)
+//     }
+// }
+
+
+const ActiveLocation = async (req, res) => {
     const org = req.body.org;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`SELECT COUNT(location_id) as count FROM ${org}.dbo.tbl_location_master;`)
-        res.status(200).send(result.recordset[0])
+        const result = await sql.query(`SELECT * FROM ${org}.dbo.tbl_location_master with (nolock) where status='Active';`)
+        res.send(result.recordset)
     }
     catch (err) {
         res.send(err)
     }
 }
+
 
 const ImportLocationMaster = (req, res) => {
     const org = req.body.org;
@@ -180,14 +199,13 @@ const ImportLocationMaster = (req, res) => {
     const User_id = req.body.User_id;
 
     sql.connect(sqlConfig).then(() => {
-
         sql.query(`INSERT INTO ${org}.dbo.tbl_location_master (location_name,gstin_no,location_id,contact_name1,
             contact_name2,contact_phone_no1,contact_phone_no2,
-            add_date_time,add_user_name,add_system_name,add_ip_address,status) 
+            add_date_time,add_user_name,add_system_name,add_ip_address,status,country,state) 
                     VALUES ${datas.map(item => `('${item.location_name}','${item.gstin_no}','${item.location_id}','${item.contact_name1}','${item.contact_name2}',
-                    '${item.contact_phone_no1}','${item.contact_phone_no2}',getdate(),'${User_id}','${os.hostname()}','${req.ip}','Active')`).join(', ')}`)
-                    res.send("Data Added")
-             
+                    '${item.contact_phone_no1}','${item.contact_phone_no2}',getdate(),'${User_id}','${os.hostname()}','${req.ip}','Active','${item.country}','${item.state}')`).join(', ')}`)
+        res.send("Data Added")
+
     })
 }
 
@@ -195,7 +213,7 @@ const ImportLocationAddress = (req, res) => {
     const org = req.body.org;
     const datas = req.body.datas;
     const User_id = req.body.User_id;
-  
+
     sql.connect(sqlConfig).then(() => {
 
         sql.query(`insert into  ${org}.dbo.tbl_location_address (location_id,location_name,gstin_no,
@@ -203,8 +221,25 @@ const ImportLocationAddress = (req, res) => {
             from_date,add_date_time,add_user_name,add_system_name,add_ip_address,status) 
                     VALUES ${datas.map(item => `('${item.location_id}','${item.location_name}','${item.gstin_no}','${item.location_add1}','${item.location_add2}',
                     '${item.location_city}','${item.location_state}','${item.location_pin}','${item.location_country}','${item.from_date}',getdate(),'${User_id}','${os.hostname()}','${req.ip}','Active')`).join(', ')}`)
-                    res.send("Data Added")
-             
+        res.send("Data Added")
+
     })
 }
-module.exports = { AddLocation, TotalLocation, LocationAddress, UpdateLocationAddress, ShowLocation, InsertLocationAddress, UpdateLocation, Locationstatus, LastLocationid ,ImportLocationMaster,ImportLocationAddress}
+
+const ActiveLocationAddress = async (req, res) => {
+    const org = req.body.org;
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`SELECT * FROM ${org}.dbo.tbl_location_address with (nolock) where status='Active'`)
+        res.send(result.recordset)
+    }
+    catch (err) {
+        res.send(err)
+    }
+}
+
+module.exports = {
+    AddLocation, TotalLocation, LocationAddress, UpdateLocationAddress, ShowLocation, InsertLocationAddress, UpdateLocation, Locationstatus,
+    // LastLocationid,
+    ActiveLocation, ImportLocationMaster, ImportLocationAddress, ActiveLocationAddress
+}

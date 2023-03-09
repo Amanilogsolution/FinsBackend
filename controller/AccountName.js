@@ -89,9 +89,6 @@ const ImportAccountName = (req, res) => {
     const org = req.body.org;
     const User_id = req.body.User_id;
 
-    console.log(org)
-   
-
     sql.connect(sqlConfig).then(() => {
 
         sql.query(`select * from ${org}.dbo.tbl_account_type where account_type_code in ('${datas.map(data => data.account_type_code).join("', '")}') OR account_type in ('${datas.map(data => data.account_type).join("', '")}')`)
@@ -110,4 +107,16 @@ const ImportAccountName = (req, res) => {
     })
 }
 
-module.exports = {InsertAccountType,UpdateAccountName,TotalAccountName,AccountnameStatus,SelectAccountName,ImportAccountName}
+const ActiveAccountName = async (req, res) => {
+    const org = req.body.org;
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`select account_type,account_type_code from ${org}.dbo.tbl_account_type with (nolock) where status = 'Active'`)
+        res.send(result.recordset)
+    }
+    catch (err) {
+        res.send(err)
+    }
+}
+
+module.exports = {InsertAccountType,UpdateAccountName,TotalAccountName,AccountnameStatus,SelectAccountName,ImportAccountName,ActiveAccountName}

@@ -1,5 +1,5 @@
 const sql = require('mssql')
-const sqlConfig = require('../config.js')
+const sqlConfig = require('../../config.js')
 const os = require('os')
 const uuidv1 = require("uuid/v1");
 
@@ -20,7 +20,7 @@ const GlSubCode = async (req, res) => {
     const glCode = req.body.glCode;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`SELECT COUNT(charge_code) as count FROM ${org}.dbo.tbl_gl_sub WHERE gl_code ='${glCode}' `)
+        const result = await sql.query(`SELECT COUNT(charge_code) as count FROM ${org}.dbo.tbl_gl_sub with (nolock) WHERE gl_code ='${glCode}' `)
         res.send(result.recordset[0])
     }
     catch (err) {
@@ -50,7 +50,7 @@ const ShowTotalSubCode = async (req, res) => {
     const org = req.body.org;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`SELECT * from ${org}.dbo.tbl_gl_sub;`)
+        const result = await sql.query(`SELECT * from ${org}.dbo.tbl_gl_sub with (nolock);`)
         res.send(result.recordset)
 
     }
@@ -78,7 +78,7 @@ const GetSubCodeDetails = async (req, res) => {
     const sno = req.body.sno;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`SELECT * from ${org}.dbo.tbl_gl_sub where sno='${sno}'`)
+        const result = await sql.query(`SELECT * from ${org}.dbo.tbl_gl_sub with (nolock) where sno='${sno}'`)
         res.send(result.recordset[0])
     }
     catch (err) {

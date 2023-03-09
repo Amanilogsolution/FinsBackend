@@ -1,5 +1,5 @@
 const sql = require('mssql')
-const sqlConfig = require('../config.js')
+const sqlConfig = require('../../config.js')
 const os = require('os')
 const uuidv1 = require("uuid/v1");
 
@@ -7,7 +7,7 @@ const Showcompliances = async (req, res) => {
     const org = req.body.org
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select sno,compliance_type,nature,period,period_name,convert(varchar(15),from_month,121) as from_month,convert(varchar(15),to_month,121) as to_month,from_applicable,convert(varchar(15),due_date,121) as due_date,convert(varchar(15),extended_date,121) as extended_date,status  from ${org}.dbo.tbl_compliance order by sno desc`)
+        const result = await sql.query(`select sno,compliance_type,nature,period,period_name,convert(varchar(15),from_month,121) as from_month,convert(varchar(15),to_month,121) as to_month,from_applicable,convert(varchar(15),due_date,121) as due_date,convert(varchar(15),extended_date,121) as extended_date,status  from ${org}.dbo.tbl_compliance with (nolock) order by sno desc`)
         res.send(result.recordset)
     } catch (err) {
         res.send(err)
@@ -27,7 +27,6 @@ const Insertcompliance = async (req, res) => {
     const due_date = req.body.due_date;
     const extended_date = req.body.extended_date;
     const user_name = req.body.user_name
-    console.log(org, compliance_type, nature, period, period_name, from_month, to_month, from_applicable, due_date, extended_date)
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`insert into ${org}.dbo.tbl_compliance (compliance_type ,nature,period ,period_name ,from_month,to_month ,
@@ -49,7 +48,7 @@ const ShowcompliancesData = async (req, res) => {
     const sno = req.body.sno
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select compliance_type,nature,period,period_name,convert(varchar(15),from_month,121) as from_month,convert(varchar(15),to_month,121) as to_month,from_applicable,convert(varchar(15),due_date,121) as due_date,convert(varchar(15),extended_date,121) as extended_date,status  from ${org}.dbo.tbl_compliance where sno=${sno}`)
+        const result = await sql.query(`select compliance_type,nature,period,period_name,convert(varchar(15),from_month,121) as from_month,convert(varchar(15),to_month,121) as to_month,from_applicable,convert(varchar(15),due_date,121) as due_date,convert(varchar(15),extended_date,121) as extended_date,status  from ${org}.dbo.tbl_compliance with (nolock) where sno=${sno}`)
         res.send(result.recordset[0])
     } catch (err) {
         res.send(err)
@@ -71,7 +70,6 @@ const Updatecompliance = async (req, res) => {
     const sno = req.body.sno;
     const user_name = req.body.user_name
 
-    console.log(org, compliance_type, nature, period, period_name, from_month, to_month, from_applicable, due_date, extended_date, sno)
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(` update ${org}.dbo.tbl_compliance set compliance_type='${compliance_type}',nature='${nature}',period='${period}',period_name='${period_name}',from_month='${from_month}',
@@ -102,11 +100,9 @@ const Compliancestatus = async (req, res) => {
 
 const Compliancesduedate = async (req, res) => {
     const org = req.body.org;
-    // console.log("org",org)
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select convert(varchar(15),due_date,121) as due_date  from ${org}.dbo.tbl_compliance where status='Active'`)
-        console.log(result.recordset)
+        const result = await sql.query(`select convert(varchar(15),due_date,121) as due_date  from ${org}.dbo.tbl_compliance with (nolock) where status='Active'`)
         res.status(200).send(result.recordset)
     }
     catch (err) {
@@ -118,7 +114,7 @@ const PendingCompliances = async (req, res) => {
     const org = req.body.org;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select sno,compliance_type,period,document_status,remark,convert(varchar(15),due_date,121) as due_date  from ${org}.dbo.tbl_compliance where status='Active' `)
+        const result = await sql.query(`select sno,compliance_type,period,document_status,remark,convert(varchar(15),due_date,121) as due_date  from ${org}.dbo.tbl_compliance with (nolock) where status='Active' `)
         res.status(200).send(result.recordset)
     }
     catch (err) {
@@ -133,7 +129,6 @@ const UpdatePendingCompliances = async (req, res) => {
     const remark = req.body.remark;
     const sno = req.body.sno;
     const UploadLink = req.body.UploadLink
-    console.log(due_date, org, remark, sno, UploadLink)
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`update ${org}.dbo.tbl_compliance set due_date='${due_date}',remark='${remark}',document_url='${UploadLink}',document_status='true' where sno=${sno}`)

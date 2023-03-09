@@ -1,11 +1,11 @@
 const sql = require('mssql')
-const sqlConfig = require('../config.js')
+const sqlConfig = require('../../config.js')
 const os = require('os')
 const uuidv1 = require("uuid/v1");
 
 const InsertVendor = async (req, res) => {
-    const org = req.body.org;
-    const User_id = req.body.User_id;
+    const org=req.body.org;
+    const User_id=req.body.User_id;
     const mast_id = req.body.mast_id;
     const vend_id = req.body.vend_id;
     const vend_name = req.body.vend_name;
@@ -45,11 +45,9 @@ const InsertVendor = async (req, res) => {
     const contact_person_designation = req.body.contact_person_designation;
     const contact_person_department = req.body.contact_person_department;
     const remark = req.body.remark;
-    const year = req.body.year;
-    const increvend = req.body.increvend;
-    const incremvend = req.body.incremvend;
+    const year= req.body.year;
     const uuid = uuidv1()
-    console.log(increvend, incremvend)
+ 
 
     try {
         await sql.connect(sqlConfig)
@@ -72,13 +70,7 @@ const InsertVendor = async (req, res) => {
                     '${billing_address_state}','${billing_address_pincode}','${billing_address_phone}','${billing_address_fax}','${contact_person_name}',
                     '${contact_person_email}','${contact_person_work_phone}','${contact_person_phone}','${contact_person_skype}','${contact_person_designation}',
                     '${contact_person_department}','${remark}','${uuid}','Active',getdate(),'${User_id}','${os.hostname()}','${req.ip}','${year}')`)
-
-        console.log(result)
-
-        // if(result){
-        //     const result1 = await sql.query(`update ilogsolution.dbo.tbl_fin_year set vend_count=1,mvend_count=1 WHERE status='Active';`)
-        //     res.send('Added')
-        // }
+        res.send(result.rowsAffected)
     }
     catch (err) {
         res.send(err)
@@ -89,7 +81,7 @@ const Vendor = async (req, res) => {
     const org = req.body.org;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from ${org}.dbo.tbl_new_vendor order by sno desc`)
+        const result = await sql.query(`select * from ${org}.dbo.tbl_new_vendor with (nolock) order by sno desc`)
         res.send(result.recordset)
     }
     catch (err) {
@@ -116,7 +108,7 @@ async function showVendor(req, res) {
     const sno = req.body.sno
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`Select * from ${org}.dbo.tbl_new_vendor where sno = ${sno}`)
+        const result = await sql.query(`Select * from ${org}.dbo.tbl_new_vendor with (nolock) where sno = ${sno}`)
         res.send(result.recordset[0])
     } catch (err) {
         res.send(err)
@@ -155,25 +147,23 @@ async function UpdateVendor(req, res) {
     }
 }
 
-const Vendor_id = async (req, res) => {
-    const org = req.body.org;
-    try {
-        await sql.connect(sqlConfig)
-        const result = await sql.query(`SELECT vend_id from ${org}.dbo.tbl_new_vendor`)
-        res.send(result.recordset)
-    }
-    catch (err) {
-        res.send(err)
-    }
-}
+// const Vendor_id = async (req, res) => {
+//     const org= req.body.org;
+//     try {
+//         await sql.connect(sqlConfig)
+//         const result = await sql.query(`SELECT vend_id from ${org}.dbo.tbl_new_vendor`)
+//         res.send(result.recordset)
+//     }
+//     catch (err) {
+//         res.send(err)
+//     }
+// }
 
 const VendorMastid = async (req, res) => {
-    const org = req.body.org;
-    const fins_year = req.body.year;
-    console.log("fins_year", fins_year)
+    const org= req.body.org;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`SELECT DISTINCT(mast_id) from ${org}.dbo.tbl_new_vendor where fins_year=${fins_year} and status='Active'`)
+        const result = await sql.query(`SELECT DISTINCT(mast_id) from ${org}.dbo.tbl_new_vendor with (nolock) where status='Active'`)
         res.send(result.recordset)
     }
     catch (err) {
@@ -181,39 +171,35 @@ const VendorMastid = async (req, res) => {
     }
 }
 
-const TotalVendId = async (req, res) => {
-    const org = req.body.org;
-    const mast_id = req.body.mast_id;
-   
-    try {
-        await sql.connect(sqlConfig)
-        const result = await sql.query(`select count(vend_id) as count from ${org}.dbo.tbl_new_vendor tnv WHERE mast_id='${mast_id}'; `)
-        res.send(result.recordset[0])
-    }
-    catch (err) {
-        res.send(err)
-    }
-}
-const TotalVendor = async (req, res) => {
-    const org = req.body.org;
-    try {
-        await sql.connect(sqlConfig)
-        const result = await sql.query(`SELECT count(DISTINCT(mast_id)) as count2 from ${org}.dbo.tbl_new_vendor  with (nolock);`)
-        // console.log(result.recordset[0])
-        res.send(result.recordset[0])
-    }
-    catch (err) {
-        res.send(err)
-    }
-}
+// const TotalVendId = async (req, res) => {
+//     const org= req.body.org;
+//     const mast_id= req.body.mast_id;
+//     try {
+//         await sql.connect(sqlConfig)
+//         const result = await sql.query(`select count(vend_id) as count from ${org}.dbo.tbl_new_vendor tnv WHERE mast_id='${mast_id}'; `)
+//         res.send(result.recordset[0])
+//     }
+//     catch (err) {
+//         res.send(err)
+//     }
+// }
+// const TotalVendor = async (req, res) => {
+//     const org= req.body.org;
+//     try {
+//         await sql.connect(sqlConfig)
+//         const result = await sql.query(`SELECT count(DISTINCT(mast_id)) as count2 from ${org}.dbo.tbl_new_vendor  with (nolock);`)
+//         res.send(result.recordset[0])
+//     }
+//     catch (err) {
+//         res.send(err)
+//     }
+// }
 
 
 const ImportVendor = (req, res) => {
     const org = req.body.org;
     const datas = req.body.data;
     const User_id = req.body.User_id;
-
-
     sql.connect(sqlConfig).then(() => {
 
         sql.query(`select * from ${org}.dbo.tbl_new_vendor where vend_email in ('${datas.map(data => data.vend_email).join("', '")}') OR vend_phone in ('${datas.map(data => data.vend_phone).join("', '")}') OR gstin_uin in ('${datas.map(data => data.gstin_uin).join("', '")}') OR pan_no in ('${datas.map(data => data.pan_no).join("','")}')`)
@@ -221,8 +207,8 @@ const ImportVendor = (req, res) => {
                 if (resp.rowsAffected[0] > 0)
                     res.send(resp.recordset.map(item => ({ "vend_email": item.vend_email, "vend_phone": item.vend_phone, "gstin_uin": item.gstin_uin, "pan_no": item.pan_no })))
                 else {
-
-                    sql.query(`insert into ${org}.dbo.tbl_new_vendor(mast_id,vend_id,vend_name,
+                  
+                  sql.query(`insert into ${org}.dbo.tbl_new_vendor(mast_id,vend_id,vend_name,
                         company_name,vend_display_name,vend_email,vend_work_phone,vend_phone,skype_detail,designation,department,
                         website,gst_treatment,gstin_uin,pan_no,source_of_supply,currency,
                         opening_balance,payment_terms,tds,enable_portal,portal_language,facebook_url,twitter_url,
@@ -241,14 +227,40 @@ const ImportVendor = (req, res) => {
                                     '${item.billing_address_state}','${item.billing_address_pincode}','${item.billing_address_phone}','${item.billing_address_fax}','${item.contact_person_name}',
                                     '${item.contact_person_email}','${item.contact_person_work_phone}','${item.contact_person_phone}','${item.contact_person_skype}','${item.contact_person_designation}',
                                     '${item.contact_person_department}','${item.remark}','${uuidv1()}','Active',getdate(),'${User_id}','${os.hostname()}','${req.ip}')`).join(',')}`)
-
-                    res.send("Data Added")
+                    
+                                    res.send("Data Added")
                 }
-            })
-
-
-    })
+            })    })
 }
 
-module.exports = { InsertVendor, showVendor, DeleteVendor, Vendor, UpdateVendor, Vendor_id, VendorMastid, TotalVendId, TotalVendor, ImportVendor }
+const ActiveVendor =async (req,res)=>{
+    const org = req.body.org
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`SELECT vend_name,vend_id  from ${org}.dbo.tbl_new_vendor tnc  with (nolock) where status='Active'`)
+        res.send(result.recordset)
+    }
+    catch (err) {
+        res.send(err)
+    }
+
+}
+
+const ActiveSelectedVendor =async (req,res)=>{
+    const org = req.body.org;
+    const vend_id = req.body.vend_id;
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`SELECT *  from ${org}.dbo.tbl_new_vendor tnc  with (nolock) where vend_id='${vend_id}'`)
+        res.send(result.recordset)
+    }
+    catch (err) {
+        res.send(err)
+    }
+
+}
+
+module.exports = { InsertVendor, showVendor, DeleteVendor, Vendor, UpdateVendor,VendorMastid,
+    // TotalVendId, TotalVendor, Vendor_id
+    ImportVendor ,ActiveVendor,ActiveSelectedVendor}
 

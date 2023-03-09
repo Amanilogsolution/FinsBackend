@@ -1,5 +1,5 @@
 const sql = require('mssql')
-const sqlConfig = require('../config.js')
+const sqlConfig = require('../../config.js')
 const os = require('os')
 const uuidv1 = require("uuid/v1");
 
@@ -17,7 +17,7 @@ const Activecountries = async (req, res) => {
  
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select country_name from FINSDB.dbo.tbl_countries with (nolock) where status='Active' `)
+        const result = await sql.query(`select country_name,country_code from FINSDB.dbo.tbl_countries with (nolock) where status='Active' `)
         res.send(result.recordset)
     } catch (err) {
         res.send(err)
@@ -90,10 +90,9 @@ async function deletecountry(req, res) {
 }
 
 
-const CheckimportCountry = (req, res) => {
+const ImportCountry = (req, res) => {
     const datas = req.body.data;
     const User_id = req.body.User_id;
-    // console.log(datas)
 
     sql.connect(sqlConfig).then(() => {
 
@@ -117,4 +116,4 @@ const CheckimportCountry = (req, res) => {
 
 
 
-module.exports = { countries,Activecountries, InsertCountry, showcountry, updatecountry, deletecountry, CheckimportCountry }
+module.exports = { countries,Activecountries, InsertCountry, showcountry, updatecountry, deletecountry, ImportCountry }

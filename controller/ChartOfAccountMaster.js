@@ -61,8 +61,6 @@ const ImportChartofAccount = (req, res) => {
     const datas = req.body.datas;
     const org = req.body.org;
     const User_id = req.body.User_id;
-
-
     sql.connect(sqlConfig).then(() => {
 
         sql.query(`insert into ${org}.dbo.tbl_sub_account (account_type_code,account_name_code,account_sub_name,
@@ -75,4 +73,18 @@ const ImportChartofAccount = (req, res) => {
     }
     )
 }
-module.exports={TotalChartOfAccount,ChartOfAccountStatus,GetChartOfAccount,UpdateChartOfAccount,ImportChartofAccount}
+
+const ActiveChartofAccountname = async(req,res) =>{
+    const org = req.body.org;
+    const account_sub_name= req.body.account_sub_name
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`select * from ${org}.dbo.tbl_sub_account tsa  with (nolock) where account_sub_name = '${account_sub_name}' `)
+        res.send(result.recordset[0])
+    }
+    catch (err) {
+        res.send(err)
+    }
+
+}
+module.exports={TotalChartOfAccount,ChartOfAccountStatus,GetChartOfAccount,UpdateChartOfAccount,ImportChartofAccount,ActiveChartofAccountname}

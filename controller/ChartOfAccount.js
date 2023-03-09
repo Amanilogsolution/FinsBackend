@@ -5,7 +5,7 @@ const uuidv1 = require("uuid/v1");
 
 
 const Accounttype = async (req, res) => {
-    const org =req.body.org
+    const org = req.body.org
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`SELECT account_type,account_type_code from ${org}.dbo.tbl_account_type tat WHERE status='Active'`)
@@ -29,12 +29,12 @@ const Accounttype = async (req, res) => {
 //         }
 //     }
 //     catch (err) {
-//         console.log(err)
+//         res.send(err)
 //     }
 // }
 
 const ParentAccount = async (req, res) => {
-    const org =req.body.org;
+    const org = req.body.org;
     const account_type_code = req.body.account_type_code;
     try {
         await sql.connect(sqlConfig)
@@ -49,17 +49,17 @@ const ParentAccountNumber = async (req, res) => {
     const org = req.body.org;
     const account_type_code = req.body.account_type_code;
     const account_name_code = req.body.account_name_code;
-    try{
+    try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`SELECT top 1 account_name_code from ${org}.dbo.tbl_account_name WHERE status='Active'  and account_type_code='${account_type_code}' order by sno desc;`)
         const result1 = await sql.query(`SELECT top 1  account_sub_name_code,account_sub_name from ${org}.dbo.tbl_sub_account WHERE status='Active' and account_name_code='${account_name_code}' and account_type_code='${account_type_code}' order by sno desc;`)
         res.send({
-            "result":result.recordset[0],
+            "result": result.recordset[0],
             "result1": result1.recordset[0],
-           
+
         })
     }
-    catch(err){
+    catch (err) {
         res.send(err)
     }
 }
@@ -70,18 +70,17 @@ const AddAccountName = async (req, res) => {
     const account_name = req.body.account_name;
     const account_name_code = req.body.account_name_code;
     const description = req.body.description;
-    const org =req.body.org;
-    const User_id= req.body.User_id;
-    console.log(account_type_code,account_name,account_name_code,description)
+    const org = req.body.org;
+    const User_id = req.body.User_id;
 
-    try{
+    try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`INSERT into ${org}.dbo.tbl_account_name (account_type_code,account_name,account_name_code,account_description,add_user_name,
             add_system_name,add_ip_address ,add_date_time ,status ) values('${account_type_code}','${account_name}','${account_name_code}','${description}','${User_id}','${os.hostname()}','${req.ip}',
              getDate(),'Active');`)
         res.send('Added')
     }
-    catch(err){
+    catch (err) {
         res.send(err)
     }
 }
@@ -89,16 +88,15 @@ const AddAccountName = async (req, res) => {
 const AddSubAccountName = async (req, res) => {
     const account_type_code = req.body.account_type_code;
     const account_name_code = req.body.account_name_code;
-    const org=req.body.org;
-    console.log('Hello',account_name_code,account_name_code)
+    const org = req.body.org;
 
-    try{
-          await sql.connect(sqlConfig) 
-          const result = await sql.query(`INSERT into ${org}.dbo.tbl_sub_account (account_type_code,account_name_code) 
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`INSERT into ${org}.dbo.tbl_sub_account (account_type_code,account_name_code) 
             values('${account_type_code}','${account_name_code}');`)
-            res.send('Added')
+        res.send('Added')
     }
-    catch(err){
+    catch (err) {
         res.send(err)
     }
 }
@@ -108,18 +106,18 @@ const UpdateSubAccountName = async (req, res) => {
     const description = req.body.description;
     const account_type_code = req.body.account_type_code;
     const account_name_code = req.body.account_name_code;
-    const org =req.body.org;
-    const User_id= req.body.User_id;
-    console.log(account_sub_name,account_sub_name_code,description,account_type_code,account_name_code)
+    const org = req.body.org;
+    const User_id = req.body.User_id;
 
-    try{
+
+    try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`UPDATE ${org}.dbo.tbl_sub_account set account_sub_name='${account_sub_name}',account_sub_name_code='${account_sub_name_code}',add_user_name='${User_id}',
         add_system_name='${os.hostname()}',add_ip_address='${req.ip}' ,add_date_time=GETDATE(),status='Active',account_description='${description}' 
         WHERE account_type_code='${account_type_code}' and 
         account_name_code='${account_name_code}' ;`)
     }
-    catch(err){
+    catch (err) {
         res.send(err)
     }
 }
@@ -129,21 +127,54 @@ const AddNewSubAccountName = async (req, res) => {
     const description = req.body.description;
     const account_type_code = req.body.account_type_code;
     const account_name_code = req.body.account_name_code;
-    const org =req.body.org;
-    const User_id= req.body.User_id;
+    const org = req.body.org;
+    const User_id = req.body.User_id;
 
-    try{
+    try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`INSERT into ${org}.dbo.tbl_sub_account (account_type_code,account_name_code,account_sub_name,
             account_sub_name_code,account_description,add_user_name,add_system_name,add_ip_address ,add_date_time ,status ) 
             values('${account_type_code}','${account_name_code}','${account_sub_name}','${account_sub_name_code}','${description}','${User_id}','${os.hostname()}','${req.ip}',
              getDate(),'Active');
             `)
-            res.send(result)
+        res.send(result)
     }
-    catch(err){
+    catch (err) {
         res.send(err)
     }
 }
 
-module.exports = {Accounttype,ParentAccount,ParentAccountNumber,AddAccountName,AddSubAccountName,UpdateSubAccountName,AddNewSubAccountName}
+
+const SelectSubAccountname = async (req, res) => {
+    const account_type_code = req.body.account_type_code;
+    const org = req.body.org;
+
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`select account_sub_name,account_sub_name_code from  ${org}.dbo.tbl_sub_account tsa with (nolock) WHERE account_type_code ='${account_type_code}'`)
+        res.send(result.recordset)
+    }
+    catch (err) {
+        res.send(err)
+    }
+}
+
+const SelectSubAcconameByType = async (req, res) => {
+    const account_type = req.body.account_type;
+    const org = req.body.org;
+
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(` select account_type_code from ${org}.dbo.tbl_account_type with (nolock) where account_type='${account_type}' and status='Active';`)
+        res.send(result.recordset)
+    }
+    catch (err) {
+        res.send(err)
+    }
+}
+
+
+
+
+
+module.exports = { Accounttype, ParentAccount, ParentAccountNumber, AddAccountName, AddSubAccountName, UpdateSubAccountName, AddNewSubAccountName, SelectSubAccountname, SelectSubAcconameByType }

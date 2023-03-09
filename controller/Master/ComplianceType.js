@@ -1,5 +1,5 @@
 const sql =require('mssql')
-const sqlConfig = require('../config.js')
+const sqlConfig = require('../../config.js')
 const os = require('os')
 const uuidv1 = require("uuid/v1");
 
@@ -7,7 +7,7 @@ const ShowcompliancesType = async (req, res) => {
     const org = req.body.org
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from ${org}.dbo.tbl_compliances_type `)
+        const result = await sql.query(`select * from ${org}.dbo.tbl_compliances_type with (nolock)`)
         res.send(result.recordset)
     } catch (err) {
         res.send(err)
@@ -17,10 +17,9 @@ const ShowcompliancesType = async (req, res) => {
 
 const ShowActivecompliancesType = async (req, res) => {
     const org = req.body.org
-    console.log("org",org)
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from ${org}.dbo.tbl_compliances_type  where status='Active'`)
+        const result = await sql.query(`select * from ${org}.dbo.tbl_compliances_type with (nolock) where status='Active'`)
         res.send(result.recordset)
     } catch (err) {
         res.send(err)
@@ -33,7 +32,7 @@ const ShowcompliancesTypeselect = async (req, res) => {
     const sno = req.body.sno
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from ${org}.dbo.tbl_compliances_type  where sno=${sno}`)
+        const result = await sql.query(`select * from ${org}.dbo.tbl_compliances_type with (nolock) where sno=${sno}`)
         res.send(result.recordset[0])
     } catch (err) {
         res.send(err)
@@ -44,7 +43,6 @@ const InsertcomplianceType = async (req, res) =>{
     const org = req.body.org;
     const compliance_type=req.body.compliance_type;
     const user_name = req.body.user_name
-    console.log(org,compliance_type,user_name)
     try{
         await sql.connect(sqlConfig)
         const result =await sql.query(`insert into ${org}.dbo.tbl_compliances_type (compliance_type,add_date_time ,add_user_name ,add_system_name ,
@@ -64,7 +62,6 @@ const UpdatecomplianceType = async (req, res) =>{
     const compliance_type=req.body.compliance_type;
     const user_name = req.body.user_name
     const sno = req.body.sno
-    console.log(org,compliance_type,user_name)
     try{
         await sql.connect(sqlConfig)
         const result =await sql.query(`update ${org}.dbo.tbl_compliances_type set compliance_type='${compliance_type}',update_date_time=getDate() ,update_user_name='${user_name}' ,update_system_name='${os.hostname()}',
@@ -83,7 +80,6 @@ const Compliancesstatus = async(req,res) =>{
     const org =req.body.org;
     const sno = req.body.sno;
     const status =req.body.status;
-    console.log(sno,status)
     try{
       await sql.connect(sqlConfig)
       const result =await sql.query(`update ${org}.dbo.tbl_compliances_type set status='${status}' where sno=${sno}`)

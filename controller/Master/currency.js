@@ -1,17 +1,15 @@
-const sql =require('mssql')
-const sqlConfig = require('../config.js')
+const sql = require('mssql')
+const sqlConfig = require('../../config.js')
 const os = require('os')
 const uuidv1 = require("uuid/v1");
 
-const currency = async (req, res) => {
+const Totalcurrency = async (req, res) => {
     const org = req.body.org
-    console.log(org)
     try {
         await sql.connect(sqlConfig)
-
         const result = await sql.query(`select * from ${org}.dbo.tbl_currency with (nolock) order by sno desc`)
         res.send(result.recordset)
-    } 
+    }
     catch (err) {
         res.send(err)
     }
@@ -24,21 +22,20 @@ const InsertCurrency = async (req, res) => {
     const currency_name = req.body.currency_name;
     const currency_code = req.body.currency_code;
     const uuid = uuidv1()
-    try{
+    try {
         await sql.connect(sqlConfig)
-        const duplicate = await sql.query(`select * from ${org}.dbo.tbl_currency with (nolock) where currency_name='${currency_name}' OR currency_code='${currency_code}'`)
-        console.log(duplicate.recordset[0])
-        if(!duplicate.recordset.length){
-          const result = await sql.query(`insert into ${org}.dbo.tbl_currency (country_name,country_code,currency_name,currency_code,currency_uuid,add_date_time,add_user_name,add_system_name,add_ip_address,status)
+        const duplicate = await sql.query(`select * from ${org}.dbo.tbl_currency with (nolock) where currency_name='${currency_name}'`)
+        if (!duplicate.recordset.length) {
+            const result = await sql.query(`insert into ${org}.dbo.tbl_currency (country_name,country_code,currency_name,currency_code,currency_uuid,add_date_time,add_user_name,add_system_name,add_ip_address,status)
                         values('${country_name}','${country_code}','${currency_name}','${currency_code}','${uuid}',getdate(),'${User_id}','${os.hostname()}','${req.ip}','Active')`)
-        res.send('Added')
-}else{
-   res.send("Already")
-}
+            res.send('Added')
+        } else {
+            res.send("Already")
+        }
 
     }
-    catch(err){
-        console.log(err)
+    catch (err) {
+        res.send(err)
     }
 }
 const deleteCurrency = async (req, res) => {
@@ -85,30 +82,43 @@ async function ShowCurrency(req, res) {
     }
 }
 
-const ImportCurrency = (req,res) =>{
+const ImportCurrency = (req, res) => {
     const datas = req.body.data;
     const org = req.body.org;
     const user_id = req.body.user_id;
 
     sql.connect(sqlConfig).then(() => {
 
-         sql.query(`select * from ${org}.dbo.tbl_currency where country_name in ('${datas.map(data => data.country_name).join("', '")}') OR country_code in ('${datas.map(data => data.country_code).join("', '")}') OR currency_name in ('${datas.map(data => data.currency_name).join("', '")}') OR currency_code IN ('${datas.map(data => data.currency_code).join("', '")}')`)
-                .then((resp) => {
-                    console.log(resp.rowsAffected[0])
-                    if (resp.rowsAffected[0]>0)
-                    res.send(resp.recordset.map(item => ({ "country_name": item.country_name, "country_code": item.country_code, "currency_name": item.currency_name, "currency_code": item.currency_code,})))  
-                else{
-
+        sql.query(`select * from ${org}.dbo.tbl_currency where country_name in ('${datas.map(data => data.country_name).join("', '")}') OR country_code in ('${datas.map(data => data.country_code).join("', '")}') OR currency_name in ('${datas.map(data => data.currency_name).join("', '")}') OR currency_code IN ('${datas.map(data => data.currency_code).join("', '")}')`)
+            .then((resp) => {
+                if (resp.rowsAffected[0] > 0)
+                    res.send(resp.recordset.map(item => ({ "country_name": item.country_name, "country_code": item.country_code, "currency_name": item.currency_name, "currency_code": item.currency_code, })))
+                else {
                     sql.query(`insert into ${org}.dbo.tbl_currency (country_name,country_code,currency_name,currency_code,currency_uuid,add_date_time,add_user_name,add_system_name,add_ip_address,status)
                     values ${datas.map(item => `('${item.country_name}','${item.country_code}','${item.currency_name}','${item.currency_code}','${uuidv1()}',getdate(),'${user_id}','${os.hostname()}','${req.ip}','Active')`).join(',')}`)
                     res.send("Data Added")
-                } 
-              })
-    
+                }
+            })
+
 
     })
 
 
 }
 
-module.exports = {currency,InsertCurrency,deleteCurrency,UpdateCurrency,ShowCurrency,ImportCurrency}
+
+
+const ActiveCurrency = async (req, res) => {
+    const org = req.body.org;
+
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`select * from ${org}.dbo.tbl_currency with (nolock) WHERE status='Active'`)
+        res.send(result.recordset)
+    }
+    catch (err) {
+        res.send(err)
+    }
+}
+
+module.exports = { Totalcurrency, InsertCurrency, deleteCurrency, UpdateCurrency, ShowCurrency, ImportCurrency, ActiveCurrency }

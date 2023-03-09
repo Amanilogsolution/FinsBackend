@@ -18,6 +18,7 @@ module.exports = (req, res, next) => {
                     message: 'Auth failed'
                 });
             } else {
+                console.log(decoded)
                 const jwtauth= jwt.verify(token,process.env.JWT_KEY)
                 console.log(jwtauth.user_id)
                 next()
