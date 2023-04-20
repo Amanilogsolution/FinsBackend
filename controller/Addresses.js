@@ -68,7 +68,7 @@ const SelectCustAddress = async (req, res) => {
         await sql.connect(sqlConfig)
         const result = await sql.query(`SELECT DISTINCT cust_id,cust_name FROM ${org}.dbo.tbl_cust_addresses with (nolock) WHERE cust_name LIKE '%${cust_name}%';`)
         res.send(result.recordset)
-        
+
     }
     catch (err) {
         res.send(err)
@@ -141,6 +141,20 @@ const CustAddress = async (req, res) => {
         res.send(err)
     }
 }
+const SearchCustAddress = async (req, res) => {
+    const org = req.body.org;
+    const cust_id = req.body.cust_id;
+    const val = req.body.val;
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`SELECT * FROM ${org}.dbo.tbl_cust_addresses with (nolock) where status='Active' and cust_id='${cust_id}' and 
+        billing_address_city LIKE '${val}%'`)
+        res.send(result.recordset)
+    }
+    catch (err) {
+        res.send(err)
+    }
+}
 
 const VendAddress = async (req, res) => {
     const sno = req.body.sno;
@@ -192,7 +206,7 @@ const UpdateCustAddress = async (req, res) => {
 const UpdateVendAddress = async (req, res) => {
     const sno = req.body.sno;
     const vend_id = req.body.vendid;
-    const vendname= req.body.vendname;
+    const vendname = req.body.vendname;
     const billing_address_gstno = req.body.billing_address_gstno;
     const billing_address_attention = req.body.billing_address_attention;
     const billing_address_country = req.body.billing_address_country;
@@ -221,16 +235,6 @@ const Importcustaddress = async (req, res) => {
     const User_id = req.body.User_id;
 
     sql.connect(sqlConfig).then(() => {
-
-        // sql.query(`select * from ${org}.dbo.tbl_cust_addresses where cust_id in ('${importdata.map(data => data.cust_id)
-        //     .join("', '")}') OR gst_no in ('${importdata.map(data => data.gst_no)
-        //         .join("', '")}') OR cust_name in ('${importdata.map(data => data.cust_name).join("', '")}')`)
-
-        //     .then((resp) => {
-        //         if (resp.rowsAffected[0] > 0)
-        //             res.send(resp.recordset.map(item => ({ "cust_id": item.cust_id, "gst_no": item.gst_no, "cust_name": item.cust_name })))
-        //         else {
-
         sql.query(`INSERT INTO  ${org}.dbo.tbl_cust_addresses(cust_id ,cust_name,gst_no,billing_address_attention,billing_address_country,billing_address_city,billing_address_state,billing_address_pincode,    
             billing_address_phone ,billing_address_fax,add_date_time,add_user_name,add_system_name ,add_ip_address ,status,custaddress_uuid,cust_addressid)
                              VALUES ${importdata.map(item => `('${item.cust_id}','${item.cust_name}','${item.gst_no}',
@@ -265,20 +269,31 @@ const Importvendaddress = async (req, res) => {
     )
 }
 
-const getVendorAddress =async (req,res) =>{
+const getVendorAddress = async (req, res) => {
     const org = req.body.org;
     const vendor_id = req.body.vendor_id;
-
-    try{
+    try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`select * from ${org}.dbo.tbl_vend_addresses where vend_id='${vendor_id}'`)
         res.send(result.recordset)
-
     }
     catch (err) {
         res.send(err)
     }
 }
 
-
-module.exports = { InsertCustomerAddress, InsertVendorAddress, TotalCustAddress, TotalVendAddress, DeleteCustAddress, DeleteVendAddress, CustAddress, VendAddress, SelectVendAddress, UpdateCustAddress, UpdateVendAddress, SelectCustAddress, Importcustaddress, Importvendaddress,getVendorAddress }
+const SearchVendAddress = async (req, res) => {
+    const org = req.body.org;
+    const vend_id = req.body.vend_id;
+    const val = req.body.val;
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`SELECT * FROM ${org}.dbo.tbl_vend_addresses with (nolock) where status='Active' and vend_id='${vend_id}' and 
+        billing_address_city LIKE '${val}%' `)
+        res.send(result.recordset)
+    }
+    catch (err) {
+        res.send(err)
+    }
+}
+module.exports = { InsertCustomerAddress, InsertVendorAddress, TotalCustAddress, TotalVendAddress, DeleteCustAddress, DeleteVendAddress, CustAddress, VendAddress, SelectVendAddress, UpdateCustAddress, UpdateVendAddress, SelectCustAddress, Importcustaddress, Importvendaddress, getVendorAddress,SearchCustAddress,SearchVendAddress }

@@ -9,13 +9,16 @@ const InsertPurchaseorder = async (req, res) => {
     const po_location = req.body.po_location;
     const po_number = req.body.po_number;
     const po_date = req.body.po_date;
-    const User_id = req.body.User_id
+    const User_id = req.body.User_id;
     const uuid = uuidv1()
+    const flagsave = req.body.flagsave;
+    const poamount = req.body.poamount;
+
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query
-            (`insert into ${org}.dbo.tbl_purchase_order (vendor_id,po_location,po_number,po_date,add_date_time,add_user_name,add_system_name,add_ip_address,status,po_uuid)
-            values('${vendor_id}','${po_location}','${po_number}','${po_date}',getDate(),'${User_id}','${os.hostname()}','${req.ip}','Active','${uuid}')`)
+            (`insert into ${org}.dbo.tbl_purchase_order (vendor_id,po_location,po_number,po_date,add_date_time,add_user_name,add_system_name,add_ip_address,status,po_uuid,flagsave,poamount)
+            values('${vendor_id}','${po_location}','${po_number}','${po_date}',getDate(),'${User_id}','${os.hostname()}','${req.ip}','Active','${uuid}','${flagsave}','${poamount}')`)
         res.send('Insert')
     }
     catch (err) {
@@ -60,4 +63,86 @@ const getPoDetailsVendor = async(req,res) => {
     }
 }
 
-module.exports={InsertPurchaseorder,InsertSubPurchaseorder,getPoDetailsVendor}
+const getSavePO = async (req, res) => {
+    const org = req.body.org;
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`select *,convert(varchar(15),po_date,121) as podate from ${org}.dbo.tbl_purchase_order with (nolock) where flagsave='Save'`)
+        res.send(result.recordset)
+    }
+    catch (err) {
+        res.send(err)
+    }
+
+}
+
+const filterPO = async (req, res) => {
+    const org = req.body.org;
+    const startDate = req.body.startDate;
+    const lastDate = req.body.lastDate;
+    const vendor_id = req.body.vendor_id;
+    const po_location = req.body.po_location;
+    console.log(org,startDate,lastDate,vendor_id,po_location)
+    console.log(`select * from ${org}.dbo.tbl_purchase_order tpo where  po_date between '${startDate}' and '${lastDate}' and po_location='${po_location}' and flagsave='post'`)
+    try {
+        await sql.connect(sqlConfig)
+        if (vendor_id === 'all') {
+            console.log('hllllll')
+            const result = await sql.query(`select * from ${org}.dbo.tbl_purchase_order tpo where  po_date between '${startDate}' and '${lastDate}' and po_location='${po_location}' and flagsave='post'`)
+            res.send(result.recordset)
+        }
+        else {
+            const result = await sql.query(`select * from ${org}.dbo.tbl_purchase_order tpo where   po_date between '${startDate}' and '${lastDate}' and vendor_id ='${vendor_id}'and po_location='${po_location}' and flagsave='post'`)
+            res.send(result.recordset)
+        }
+    }
+    catch (err) {
+        res.send(err)
+    }
+}
+
+const getPoDetailsPreview = async(req,res) => { 
+    const org=req.body.org;
+    const po_number=req.body.po_number;
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`select * from ${org}.dbo.tbl_purchase_order WHERE  po_number ='${po_number}'`)
+        res.send(result.recordset)
+    }
+    catch (err) {
+        res.send(err)
+    }
+}
+
+const getSubPoDetailsPreview = async(req,res) => { 
+    const org=req.body.org;
+    const po_number=req.body.po_number;
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`select * from ${org}.dbo.tbl_sub_purchase_order WHERE  po_number ='${po_number}'`)
+        res.send(result.recordset)
+    }
+    catch (err) {
+        res.send(err)
+    }
+}
+
+const EditPurchaseOrder = async(req, res) => {
+    const org = req.body.org;
+    const po_number = req.body.po_number;
+    const status = req.body.status;
+    console.log(org, po_number, status)
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`UPDATE ${org}.dbo.tbl_purchase_order set flagsave='${status}' where po_number ='${po_number}' `)
+        res.send("Updated")
+       
+
+    }
+    catch (err) {
+        res.send(err)
+    }
+}
+
+
+module.exports={InsertPurchaseorder,InsertSubPurchaseorder,getPoDetailsVendor,getSavePO,filterPO,getPoDetailsPreview,getSubPoDetailsPreview,EditPurchaseOrder}

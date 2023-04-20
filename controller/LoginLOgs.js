@@ -7,10 +7,8 @@ const uuidv1 = require("uuid/v1");
 const LoginLogs = async (req, res) => {
     const user_id = req.body.user_id;
     const user_name = req.body.user_name;
-    // const location = req.body.location;
     const comp_name = req.body.comp_name;
     const org_db_name = req.body.org_db_name;
-
 
     try {
         await sql.connect(sqlConfig)
@@ -27,8 +25,7 @@ const LoginLogs = async (req, res) => {
 const LogoutLogs = async (req, res) => {
     const user_id = req.body.user_id;
     const org_db_name = req.body.org_db_name;
-    
-  
+
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`update FINSDB.dbo.tbl_login_logs  set logout_time =GETDATE(),status='Logout'
@@ -40,4 +37,4 @@ const LogoutLogs = async (req, res) => {
     }
 }
 
-module.exports = {LoginLogs,LogoutLogs}
+module.exports = { LoginLogs, LogoutLogs }

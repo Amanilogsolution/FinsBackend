@@ -59,14 +59,15 @@ const InsertUserLogin = async (req, res) => {
     const org_db_name = req.body.org_db_name;
     const user_profile_url = req.body.user_profile_url;
     const UserRole = req.body.UserRole
+    const phone = req.body.phone
 
     const uuid = uuidv1()
 
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`insert into FINSDB.dbo.tbl_Login(user_id,user_name,location,comp_name,comp_ip,
-            user_password,login_uuid,org_name ,org_db_name,user_profile_url,UserRole)
-            values ('${user_id}','${user_name}','${location}','${comp_name}','${req.ip}','${user_password}','${uuid}','${comp_name}','${org_db_name}','${user_profile_url}','${UserRole}')`)
+            user_password,login_uuid,org_name ,org_db_name,user_profile_url,UserRole,phone_no,theme_btn_color,theme_type)
+            values ('${user_id}','${user_name}','${location}','${comp_name}','${req.ip}','${user_password}','${uuid}','${comp_name}','${org_db_name}','${user_profile_url}','${UserRole}','${phone}','primary','light')`)
         res.send('Added')
     }
     catch (err) {
@@ -127,4 +128,24 @@ async function ChangePassword(req, res) {
     }
 }
 
-module.exports = { User_login, User_logout, InsertUserLogin, showLoginuser, ChangePassword }
+async function CheckLoginUser(req, res) {
+    const user_id = req.body.user_id;
+    const user_password = req.body.user_password;
+    console.log(`select * from FINSDB.dbo.tbl_Login  with (nolock) where user_id = '${user_id}' and user_password='${user_password}'`);
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`select * from FINSDB.dbo.tbl_Login  with (nolock) where user_id = '${user_id}' and user_password='${user_password}'`)
+        if(result.recordset[0]){
+            res.send('Confirmed')
+        }else{
+            res.send('Not Confirmed')
+
+        }
+        console.log(result)
+    }
+    catch (err) {
+        res.send(err)
+    }
+}
+
+module.exports = { User_login, User_logout, InsertUserLogin, showLoginuser, ChangePassword,CheckLoginUser }

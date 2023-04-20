@@ -23,15 +23,14 @@ async function Insertorg(req, res) {
     const last_year = req.body.last_year;
     const startdate = req.body.startdate;
     const toyear = req.body.toyear;
-
     const uuid = uuidv1()
 
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`INSERT into FinsDB.dbo.organisation(org_name,org_country,org_state,org_street,org_city,org_pincode,org_currency,
+        const result = await sql.query(`INSERT into FinsDB.dbo.organisation(org_name,org_db_name,org_country,org_state,org_street,org_city,org_pincode,org_currency,
             org_lang,org_gst,org_contact_name,org_contact_phone,org_contact_email,add_ip_address,
             add_date_time,add_user_name,add_system_name,org_uuid,status)
-            values('${org_name}','${org_country}','${org_state}','${org_street}','${org_city}','${org_pin}','${org_currency}','${org_lang}','${org_gst}','${org_contact_name}',
+            values('${org_name}','${dbname}','${org_country}','${org_state}','${org_street}','${org_city}','${org_pin}','${org_currency}','${org_lang}','${org_gst}','${org_contact_name}',
             ${org_contact_phone},'${org_contact_email}','${req.ip}',getdate(),'${User_id}','${os.hostname()}','${uuid}','Active')`)
 
         if (result.rowsAffected[0] > 0) {
@@ -55,10 +54,11 @@ async function Insertorg(req, res) {
 
 
 const ShowOrganisation = async (req, res) => {
-    const org_name = req.body.org_name
+    const org_db_name = req.body.org_db_name;
+    console.log(`select * from FinsDB.dbo.organisation with (nolock) where org_db_name = '${org_db_name}'`)
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select * from FinsDB.dbo.organisation with (nolock) where org_name = '${org_name}'`)
+        const result = await sql.query(`select * from FinsDB.dbo.organisation with (nolock) where org_db_name = '${org_db_name}'`)
         res.send(result.recordset[0])
 
     }
@@ -67,7 +67,7 @@ const ShowOrganisation = async (req, res) => {
     }
 }
 const UpdateOrganisation = async (req, res) => {
-    const org_name = req.body.org_name;
+    const org_db_name = req.body.org_name;
     const org_contact_name = req.body.org_contact_name;
     const org_contact_phone = req.body.org_contact_phone;
     const org_contact_email = req.body.org_contact_email;
@@ -87,7 +87,7 @@ const UpdateOrganisation = async (req, res) => {
         await sql.connect(sqlConfig)
         const result = await sql.query(`update FINSDB.dbo.organisation set org_contact_name='${org_contact_name}', org_contact_phone ='${org_contact_phone}',org_contact_email='${org_contact_email}',
                 org_street='${org_street}',org_city='${org_city}',org_pincode='${org_pincode}',org_gst ='${org_gst}',update_ip_address='${req.ip}',update_date_time=getdate(),
-                update_user_name='${User_id}',update_system_name ='${os.hostname()}',industry_type='${industry_type}',fins_year_month='${fins_year}',report_basic='${report_basic}',company_id='${company_id}',tax_id='${tax_id}',org_logo='${uploadimage}' where org_name ='${org_name}';
+                update_user_name='${User_id}',update_system_name ='${os.hostname()}',industry_type='${industry_type}',fins_year_month='${fins_year}',report_basic='${report_basic}',company_id='${company_id}',tax_id='${tax_id}',org_logo='${uploadimage}' where org_db_name ='${org_db_name}';
                 `)
         res.send(result)
 

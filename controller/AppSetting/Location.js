@@ -238,8 +238,21 @@ const ActiveLocationAddress = async (req, res) => {
     }
 }
 
+const SearchLocationAddress = async (req, res) => {
+    const org = req.body.org;
+    const val= req.body.val;
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`SELECT * FROM ${org}.dbo.tbl_location_address with (nolock) where status='Active' and location_city LIKE '${val}%' or
+        location_add1 LIKE '${val}%'`)
+        res.send(result.recordset)
+    }
+    catch (err) {
+        res.send(err)
+    }
+}
+
 module.exports = {
     AddLocation, TotalLocation, LocationAddress, UpdateLocationAddress, ShowLocation, InsertLocationAddress, UpdateLocation, Locationstatus,
-    // LastLocationid,
-    ActiveLocation, ImportLocationMaster, ImportLocationAddress, ActiveLocationAddress
+    ActiveLocation, ImportLocationMaster, ImportLocationAddress, ActiveLocationAddress,SearchLocationAddress
 }

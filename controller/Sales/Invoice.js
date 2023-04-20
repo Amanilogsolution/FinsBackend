@@ -37,9 +37,8 @@ const InsertInvoice = async (req, res) => {
     const User_id = req.body.User_id;
     const cust_location_addrs = req.body.custaddrs;
     const cust_location_gst = req.body.custAddgst;
-    const destination= req.body.destination;
-    const origin= req.body.origin;
-    
+    const destination = req.body.destination;
+    const origin = req.body.origin;
 
     try {
         await sql.connect(sqlConfig)
@@ -51,8 +50,6 @@ const InsertInvoice = async (req, res) => {
             '${major}','${location}','${custid}','${billsubtotal}','${total_tax}','${cust_locationid}','${cust_location_addrs}','${cust_location_gst}','${remark}','${flagsave}','${location_name}','${consignee}','${cust_family}',
             '${cgst_amt}','${sgst_amt}','${utgst_amt}','${igst_amt}','${taxable_amt}','${currency_type}','${sales_person}','${payment_term}','${due_date}','${origin}','${destination}',getdate(),'${User_id}','${os.hostname()}','${req.ip}','Active')`)
         res.send('Added')
-
-
     }
     catch (err) {
         res.send(err)
@@ -69,12 +66,12 @@ const filterInvoice = async (req, res) => {
         await sql.connect(sqlConfig)
         if (custid === 'all') {
             const result = await sql.query(`select *,convert(varchar(15),invoice_date,121) as Joindate  from ${org}.dbo.tbl_invoice with (nolock) where convert(date,invoice_date) between '${startDate}' 
-            and '${lastDate}' and location ='${locationid}' and flagsave='post'`)
+            and '${lastDate}' or location ='${locationid}' and flagsave='post' order by sno desc;`)
             res.send(result.recordset)
         }
         else {
             const result = await sql.query(`select *,convert(varchar(15),invoice_date,121) as Joindate  from ${org}.dbo.tbl_invoice with (nolock) where convert(date,invoice_date) between '${startDate}' 
-            and '${lastDate}' and custid='${custid}' and location ='${locationid}' and flagsave='post'`)
+            and '${lastDate}' and custid='${custid}' or location ='${locationid}' and flagsave='post' order by sno desc;`)
             res.send(result.recordset)
         }
     }
@@ -89,7 +86,9 @@ const getInvoice = async (req, res) => {
     const invoiceno = req.body.invoiceno;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select *,convert(varchar(15),invoice_date,121) as startdate,convert(varchar(15),due_date,121) as lastdate from ${org}.dbo.tbl_invoice with (nolock) where invoice_no='${invoiceno}'`)
+        const result = await sql.query(`select *,convert(varchar(15),invoice_date,121) as startdate,convert(varchar(15),due_date,121) as lastdate,
+        convert(varchar(15),periodfrom,121) as periodfrom_date,convert(varchar(15),periodto,121) as periodto_date
+         from ${org}.dbo.tbl_invoice with (nolock) where invoice_no='${invoiceno}'`)
         res.send(result.recordset)
     }
     catch (err) {
@@ -102,7 +101,7 @@ const getSaveInvoice = async (req, res) => {
     const org = req.body.org;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select *,convert(varchar(15),invoice_date,121) as Joindate ,convert(varchar(15),due_date,121) as lastdate from ${org}.dbo.tbl_invoice with (nolock) where flagsave='save'`)
+        const result = await sql.query(`select *,convert(varchar(15),invoice_date,121) as Joindate ,convert(varchar(15),due_date,121) as lastdate from ${org}.dbo.tbl_invoice with (nolock) where flagsave='save' order by sno desc`)
         res.send(result.recordset)
     }
     catch (err) {
@@ -111,4 +110,67 @@ const getSaveInvoice = async (req, res) => {
 
 }
 
-module.exports = { InsertInvoice, filterInvoice, getInvoice,getSaveInvoice }
+const UpdateSaveInvoiceToPost = async (req, res) => {
+    const org = req.body.org;
+    const invoice_no = req.body.invoice_no;
+    const new_invoice_no = req.body.new_invoice_no;
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(` update ${org}.dbo.tbl_invoice set invoice_no='${new_invoice_no}' ,flagsave='post' WHERE invoice_no='${invoice_no}'`)
+        if (result.rowsAffected > 0) {
+            res.send('Updated')
+        }
+        else {
+            res.send('Error')
+        }
+    }
+    catch (err) {
+        res.send(err)
+    }
+
+}
+
+const GetInvoicesByCustomer = async (req, res) => {
+    const org = req.body.org;
+    const customer_id = req.body.customer_id;
+    console.log(org, customer_id)
+    
+    try {
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`SELECT * from ilogsolution.dbo.tbl_invoice where custid = 'CUST230001' and flagsave = 'post'`)
+        res.send(result.recordset)
+
+    }
+    catch (err) {
+        res.send(err)
+    }
+
+}
+
+const filterInvoicebyCN = async (req, res) => {
+    const org = req.body.org;
+    const startDate = req.body.startDate;
+    const lastDate = req.body.lastDate;
+    const custid = req.body.custid;
+    const locationid = req.body.locationid;
+    const invoice_no = req.body.invoice_no;
+    try {
+        await sql.connect(sqlConfig)
+        if (custid === 'all') {
+            const result = await sql.query(`select *,convert(varchar(15),invoice_date,121) as Joindate  from ${org}.dbo.tbl_invoice with (nolock) where convert(date,invoice_date) between '${startDate}' 
+            and '${lastDate}' or location ='${locationid}' or invoice_no='${invoice_no}' and flagsave='post' order by sno desc;`)
+            res.send(result.recordset)
+        }
+        else {
+            const result = await sql.query(`select *,convert(varchar(15),invoice_date,121) as Joindate  from ${org}.dbo.tbl_invoice with (nolock) where convert(date,invoice_date) between '${startDate}' 
+            and '${lastDate}' and custid='${custid}' or location ='${locationid}' or invoice_no='${invoice_no}' and flagsave='post' order by sno desc;`)
+            res.send(result.recordset)
+        }
+    }
+    catch (err) {
+        res.send(err)
+    }
+
+}
+
+module.exports = { InsertInvoice, filterInvoice, getInvoice, getSaveInvoice, UpdateSaveInvoiceToPost,GetInvoicesByCustomer,filterInvoicebyCN }

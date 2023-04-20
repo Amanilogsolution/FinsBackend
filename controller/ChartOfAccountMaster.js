@@ -36,7 +36,7 @@ const GetChartOfAccount = async (req, res) => {
         await sql.connect(sqlConfig)
         const result = await sql.query(`SELECT * from ${org}.dbo.tbl_sub_account tan2 with (nolock) where sno='${sno}'`)
         res.send(result.recordset[0])
-    }   catch (err) {       
+    } catch (err) {
         res.send(err)
     }
 }
@@ -52,7 +52,7 @@ const UpdateChartOfAccount = async (req, res) => {
         const result = await sql.query(`UPDATE ${org}.dbo.tbl_sub_account  set account_sub_name='${account_sub_name}' ,update_user_name='${User_id}',update_system_name ='${os.hostname()}',
         update_ip_address ='${req.ip}',update_date_time=GETDATE() WHERE sno='${sno}';`)
         res.send(result.recordset[0])
-    }   catch (err) {       
+    } catch (err) {
         res.send(err)
     }
 }
@@ -74,9 +74,9 @@ const ImportChartofAccount = (req, res) => {
     )
 }
 
-const ActiveChartofAccountname = async(req,res) =>{
+const ActiveChartofAccountname = async (req, res) => {
     const org = req.body.org;
-    const account_sub_name= req.body.account_sub_name
+    const account_sub_name = req.body.account_sub_name
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`select * from ${org}.dbo.tbl_sub_account tsa  with (nolock) where account_sub_name = '${account_sub_name}' `)
@@ -87,4 +87,4 @@ const ActiveChartofAccountname = async(req,res) =>{
     }
 
 }
-module.exports={TotalChartOfAccount,ChartOfAccountStatus,GetChartOfAccount,UpdateChartOfAccount,ImportChartofAccount,ActiveChartofAccountname}
+module.exports = { TotalChartOfAccount, ChartOfAccountStatus, GetChartOfAccount, UpdateChartOfAccount, ImportChartofAccount, ActiveChartofAccountname }

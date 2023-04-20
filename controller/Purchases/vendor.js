@@ -4,8 +4,8 @@ const os = require('os')
 const uuidv1 = require("uuid/v1");
 
 const InsertVendor = async (req, res) => {
-    const org=req.body.org;
-    const User_id=req.body.User_id;
+    const org = req.body.org;
+    const User_id = req.body.User_id;
     const mast_id = req.body.mast_id;
     const vend_id = req.body.vend_id;
     const vend_name = req.body.vend_name;
@@ -45,9 +45,8 @@ const InsertVendor = async (req, res) => {
     const contact_person_designation = req.body.contact_person_designation;
     const contact_person_department = req.body.contact_person_department;
     const remark = req.body.remark;
-    const year= req.body.year;
+    const year = req.body.year;
     const uuid = uuidv1()
- 
 
     try {
         await sql.connect(sqlConfig)
@@ -70,6 +69,7 @@ const InsertVendor = async (req, res) => {
                     '${billing_address_state}','${billing_address_pincode}','${billing_address_phone}','${billing_address_fax}','${contact_person_name}',
                     '${contact_person_email}','${contact_person_work_phone}','${contact_person_phone}','${contact_person_skype}','${contact_person_designation}',
                     '${contact_person_department}','${remark}','${uuid}','Active',getdate(),'${User_id}','${os.hostname()}','${req.ip}','${year}')`)
+
         res.send(result.rowsAffected)
     }
     catch (err) {
@@ -160,7 +160,7 @@ async function UpdateVendor(req, res) {
 // }
 
 const VendorMastid = async (req, res) => {
-    const org= req.body.org;
+    const org = req.body.org;
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`SELECT DISTINCT(mast_id) from ${org}.dbo.tbl_new_vendor with (nolock) where status='Active'`)
@@ -207,8 +207,8 @@ const ImportVendor = (req, res) => {
                 if (resp.rowsAffected[0] > 0)
                     res.send(resp.recordset.map(item => ({ "vend_email": item.vend_email, "vend_phone": item.vend_phone, "gstin_uin": item.gstin_uin, "pan_no": item.pan_no })))
                 else {
-                  
-                  sql.query(`insert into ${org}.dbo.tbl_new_vendor(mast_id,vend_id,vend_name,
+
+                    sql.query(`insert into ${org}.dbo.tbl_new_vendor(mast_id,vend_id,vend_name,
                         company_name,vend_display_name,vend_email,vend_work_phone,vend_phone,skype_detail,designation,department,
                         website,gst_treatment,gstin_uin,pan_no,source_of_supply,currency,
                         opening_balance,payment_terms,tds,enable_portal,portal_language,facebook_url,twitter_url,
@@ -227,13 +227,14 @@ const ImportVendor = (req, res) => {
                                     '${item.billing_address_state}','${item.billing_address_pincode}','${item.billing_address_phone}','${item.billing_address_fax}','${item.contact_person_name}',
                                     '${item.contact_person_email}','${item.contact_person_work_phone}','${item.contact_person_phone}','${item.contact_person_skype}','${item.contact_person_designation}',
                                     '${item.contact_person_department}','${item.remark}','${uuidv1()}','Active',getdate(),'${User_id}','${os.hostname()}','${req.ip}')`).join(',')}`)
-                    
-                                    res.send("Data Added")
+
+                    res.send("Data Added")
                 }
-            })    })
+            })
+    })
 }
 
-const ActiveVendor =async (req,res)=>{
+const ActiveVendor = async (req, res) => {
     const org = req.body.org
     try {
         await sql.connect(sqlConfig)
@@ -246,7 +247,7 @@ const ActiveVendor =async (req,res)=>{
 
 }
 
-const ActiveSelectedVendor =async (req,res)=>{
+const ActiveSelectedVendor = async (req, res) => {
     const org = req.body.org;
     const vend_id = req.body.vend_id;
     try {
@@ -260,7 +261,9 @@ const ActiveSelectedVendor =async (req,res)=>{
 
 }
 
-module.exports = { InsertVendor, showVendor, DeleteVendor, Vendor, UpdateVendor,VendorMastid,
+module.exports = {
+    InsertVendor, showVendor, DeleteVendor, Vendor, UpdateVendor, VendorMastid,
     // TotalVendId, TotalVendor, Vendor_id
-    ImportVendor ,ActiveVendor,ActiveSelectedVendor}
+    ImportVendor, ActiveVendor, ActiveSelectedVendor
+}
 

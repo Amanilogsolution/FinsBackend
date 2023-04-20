@@ -11,7 +11,6 @@ const sqlConfig = require('./config.js')
 const { default: axios } = require("axios")
 const twofactor = require("node-2fa");
 
-
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
@@ -44,7 +43,6 @@ app.post('/Twofa',async function(req,res){
 app.post('/VerifyTwo' , async function (req,res){
   const secret = req.body.secret;
   const otp = req.body.otp;
-  console.log(secret,otp)
   try{
     const result = twofactor.verifyToken(secret, otp);
     if(result && result.delta === 0){
@@ -52,14 +50,10 @@ app.post('/VerifyTwo' , async function (req,res){
     }else{
       res.send("NotVerify")
     }
-
   }catch (err) {
       console.log(err)
   }
 })
-
-
-
 
 
 app.listen(port, (err, req, res, next) => {
