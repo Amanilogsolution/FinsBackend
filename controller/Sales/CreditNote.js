@@ -48,6 +48,7 @@ const ChangeCNStatus = async (req, res) => {
     const org = req.body.org;
     const status = req.body.status;
     const sno = req.body.sno;
+    console.log(`update ${org}.dbo.tbl_creditnote set status='${status}' where sno = ${sno}`)
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`update ${org}.dbo.tbl_creditnote set status='${status}' where sno = ${sno} `)
@@ -99,7 +100,7 @@ const SelectCnSubDetails = async (req, res) => {
     const topcount = req.body.topcount;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select Top ${topcount} * from ${org}.dbo.tbl_sub_cn where cn_no='${cn_no}' and invoice_no ='${inv_no}' ORDER BY sno DESC  `)
+        const result = await sql.query(`select Top ${topcount} * from ${org}.dbo.tbl_sub_creditnote where invoice_no ='${inv_no}' ORDER BY sno DESC  `)
         res.send(result.recordset)
     }
     catch (err) {
@@ -107,4 +108,28 @@ const SelectCnSubDetails = async (req, res) => {
     }
 }
 
-module.exports = { InsertCreditNote, AllCNData, ChangeCNStatus, getCNData, InsertCnSub, SelectCnSubDetails }
+const filterCN = async (req, res) => {
+    const org = req.body.org;
+    const startDate = req.body.startDate;
+    const lastDate = req.body.lastDate;
+    const custid = req.body.custid;
+    const locationid = req.body.locationid;
+    try {
+        await sql.connect(sqlConfig)
+        if (custid === 'all') {
+            const result = await sql.query(`select *,convert(varchar(15),cn_date,121) as Joindate   from ${org}.dbo.tbl_creditnote with (nolock) where cn_date between '${startDate}' 
+            and '${lastDate}' or location ='${locationid}'  order by sno desc;`)
+            res.send(result.recordset)
+        }
+        else {
+            const result = await sql.query(`select *,convert(varchar(15),cn_date,121) as Joindate   from ${org}.dbo.tbl_creditnote with (nolock) where cn_date between '${startDate}' 
+            and '${lastDate}' and cust_id = '${custid}' or location ='${locationid}'  order by sno desc;`)
+            res.send(result.recordset)
+        }
+    }
+    catch (err) {
+        res.send(err)
+    }
+}
+
+module.exports = { InsertCreditNote, AllCNData, ChangeCNStatus, getCNData, InsertCnSub, SelectCnSubDetails,filterCN }

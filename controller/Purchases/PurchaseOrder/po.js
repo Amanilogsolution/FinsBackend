@@ -4,8 +4,8 @@ const os = require('os')
 const uuidv1 = require("uuid/v1");
 
 const InsertPurchaseorder = async (req, res) => {
-    const org=req.body.org;
-    const vendor_id=req.body.vendor_id;
+    const org = req.body.org;
+    const vendor_id = req.body.vendor_id;
     const po_location = req.body.po_location;
     const po_number = req.body.po_number;
     const po_date = req.body.po_date;
@@ -27,8 +27,8 @@ const InsertPurchaseorder = async (req, res) => {
 }
 
 const InsertSubPurchaseorder = async (req, res) => {
-    const org=req.body.org;
-    const vendor_id=req.body.vendor_id;
+    const org = req.body.org;
+    const vendor_id = req.body.vendor_id;
     const po_number = req.body.po_number;
     const location = req.body.location;
     const items = req.body.items;
@@ -48,10 +48,9 @@ const InsertSubPurchaseorder = async (req, res) => {
     }
 }
 
-const getPoDetailsVendor = async(req,res) => { 
-    const org=req.body.org;
-    const vendor_id=req.body.vendor_id;
-    console.log(org, vendor_id)
+const getPoDetailsVendor = async (req, res) => {
+    const org = req.body.org;
+    const vendor_id = req.body.vendor_id;
 
     try {
         await sql.connect(sqlConfig)
@@ -67,7 +66,7 @@ const getSavePO = async (req, res) => {
     const org = req.body.org;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select *,convert(varchar(15),po_date,121) as podate from ${org}.dbo.tbl_purchase_order with (nolock) where flagsave='Save'`)
+        const result = await sql.query(`select *,convert(varchar(15),po_date,121) as podate from ${org}.dbo.tbl_purchase_order with (nolock) where flagsave='Save' order by sno desc`)
         res.send(result.recordset)
     }
     catch (err) {
@@ -82,17 +81,15 @@ const filterPO = async (req, res) => {
     const lastDate = req.body.lastDate;
     const vendor_id = req.body.vendor_id;
     const po_location = req.body.po_location;
-    console.log(org,startDate,lastDate,vendor_id,po_location)
-    console.log(`select * from ${org}.dbo.tbl_purchase_order tpo where  po_date between '${startDate}' and '${lastDate}' and po_location='${po_location}' and flagsave='post'`)
+
     try {
         await sql.connect(sqlConfig)
         if (vendor_id === 'all') {
-            console.log('hllllll')
-            const result = await sql.query(`select * from ${org}.dbo.tbl_purchase_order tpo where  po_date between '${startDate}' and '${lastDate}' and po_location='${po_location}' and flagsave='post'`)
+            const result = await sql.query(`select * from ${org}.dbo.tbl_purchase_order tpo where po_date between '${startDate}' and '${lastDate}' and po_location='${po_location}' and flagsave='post'`)
             res.send(result.recordset)
         }
         else {
-            const result = await sql.query(`select * from ${org}.dbo.tbl_purchase_order tpo where   po_date between '${startDate}' and '${lastDate}' and vendor_id ='${vendor_id}'and po_location='${po_location}' and flagsave='post'`)
+            const result = await sql.query(`select * from ${org}.dbo.tbl_purchase_order tpo where po_date between '${startDate}' and '${lastDate}' and vendor_id ='${vendor_id}'and po_location='${po_location}' and flagsave='post'`)
             res.send(result.recordset)
         }
     }
@@ -101,9 +98,9 @@ const filterPO = async (req, res) => {
     }
 }
 
-const getPoDetailsPreview = async(req,res) => { 
-    const org=req.body.org;
-    const po_number=req.body.po_number;
+const getPoDetailsPreview = async (req, res) => {
+    const org = req.body.org;
+    const po_number = req.body.po_number;
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`select * from ${org}.dbo.tbl_purchase_order WHERE  po_number ='${po_number}'`)
@@ -114,9 +111,9 @@ const getPoDetailsPreview = async(req,res) => {
     }
 }
 
-const getSubPoDetailsPreview = async(req,res) => { 
-    const org=req.body.org;
-    const po_number=req.body.po_number;
+const getSubPoDetailsPreview = async (req, res) => {
+    const org = req.body.org;
+    const po_number = req.body.po_number;
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`select * from ${org}.dbo.tbl_sub_purchase_order WHERE  po_number ='${po_number}'`)
@@ -127,16 +124,24 @@ const getSubPoDetailsPreview = async(req,res) => {
     }
 }
 
-const EditPurchaseOrder = async(req, res) => {
+const EditPurchaseOrder = async (req, res) => {
     const org = req.body.org;
-    const po_number = req.body.po_number;
+    const po_number = req.body.po_num;
     const status = req.body.status;
-    console.log(org, po_number, status)
+    const new_po_number = req.body.new_po_number;
+
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`UPDATE ${org}.dbo.tbl_purchase_order set flagsave='${status}' where po_number ='${po_number}' `)
-        res.send("Updated")
-       
+        const result = await sql.query(`UPDATE ${org}.dbo.tbl_purchase_order set flagsave='${status}',po_number='${new_po_number}' where po_number ='${po_number}';
+        UPDATE ${org}.dbo.tbl_sub_purchase_order set po_number='${new_po_number}' where po_number ='${po_number}' `)
+    
+        if (result.rowsAffected[0]>0) {
+            res.send("Updated")
+        }
+        else{
+            res.send("Error")
+        }
+
 
     }
     catch (err) {
@@ -145,4 +150,4 @@ const EditPurchaseOrder = async(req, res) => {
 }
 
 
-module.exports={InsertPurchaseorder,InsertSubPurchaseorder,getPoDetailsVendor,getSavePO,filterPO,getPoDetailsPreview,getSubPoDetailsPreview,EditPurchaseOrder}
+module.exports = { InsertPurchaseorder, InsertSubPurchaseorder, getPoDetailsVendor, getSavePO, filterPO, getPoDetailsPreview, getSubPoDetailsPreview, EditPurchaseOrder }

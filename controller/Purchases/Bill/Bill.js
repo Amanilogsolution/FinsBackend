@@ -169,12 +169,12 @@ const filterInvoicebyDN = async (req, res) => {
     try {
         await sql.connect(sqlConfig)
         if (vendorid == 'all') {
-            const result = await sql.query(`select *,convert(varchar(15),bill_date,121) as Joindate from ${org}.dbo.tbl_bill with (nolock) where convert(date,bill_date) between '${startDate}'and '${lastDate}' or bill_no='${bill_no}' and flagsave = 'post' 
+            const result = await sql.query(`select *,convert(varchar(15),bill_date,121) as Joindate from ${org}.dbo.tbl_bill with (nolock) where (convert(date,bill_date) between '${startDate}'and '${lastDate}' or bill_no='${bill_no}' and flagsave = 'post') and (dnflag = '3' or dnflag is Null ) 
             order by sno desc`)
             res.send(result.recordset)
         }
         else {
-            const result = await sql.query(`select *,convert(varchar(15),bill_date,121) as Joindate from ${org}.dbo.tbl_bill with (nolock) where convert(date,bill_date) between '${startDate}'and '${lastDate}' or vend_id='${vendorid}' or bill_no='${bill_no}' and flagsave = 'post' 
+            const result = await sql.query(`select *,convert(varchar(15),bill_date,121) as Joindate from ${org}.dbo.tbl_bill with (nolock) where (convert(date,bill_date) between '${startDate}'and '${lastDate}' or vend_id='${vendorid}' or bill_no='${bill_no}' and flagsave = 'post') and (dnflag = '3' or dnflag is Null ) 
             order by sno desc`)
             res.send(result.recordset)
         }
@@ -185,4 +185,26 @@ const filterInvoicebyDN = async (req, res) => {
 
 }
 
-module.exports = { InsertBill, FilterBillReport,getSaveBill,GetBillData,UpdateSaveBillToPost,GetBillVendorID,filterInvoicebyDN }
+const UpdateBillDNFlag = async(req,res) =>{
+    const org = req.body.org;
+    const dnflag = req.body.dnflag;
+    const dn_amt = req.body.dn_amt;
+    const vourcher_no = req.body.vourcher_no;
+
+    try{
+        await sql.connect(sqlConfig)
+        const result = await sql.query(`update ${org}.dbo.tbl_bill set dnflag='${dnflag}' ,dn_amt='${dn_amt}' WHERE vourcher_no='${vourcher_no}'`)
+        if (result.rowsAffected > 0) {
+            res.send('Updated')
+        }
+        else {
+            res.send('Error')
+        }
+    }
+    catch(err){
+
+    }
+
+}
+
+module.exports = { InsertBill,FilterBillReport,getSaveBill,GetBillData,UpdateSaveBillToPost,GetBillVendorID,filterInvoicebyDN,UpdateBillDNFlag } 

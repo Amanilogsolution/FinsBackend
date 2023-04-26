@@ -63,7 +63,7 @@ const AllDNData = async (req, res) => {
     const org = req.body.org;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select *,convert(varchar(15),dn_date,121) as Joindate  from ilogsolution.dbo.tbl_debitnote  ORDER BY sno DESC`)
+        const result = await sql.query(`select *,convert(varchar(15),dn_date,121) as Joindate  from ilogsolution.dbo.tbl_debitnote where dn_flag='Confirmed' or dn_flag='Waiting' ORDER BY sno DESC`)
         res.send(result.recordset)
     }
     catch (err) {
@@ -75,7 +75,6 @@ const ChangeDNStatus = async (req, res) => {
     const org = req.body.org;
     const status = req.body.status;
     const sno = req.body.sno;
-    
     try {
         await sql.connect(sqlConfig)
         const result = await sql.query(`update ${org}.dbo.tbl_debitnote set dn_flag='${status}' where sno = ${sno} `)
@@ -137,7 +136,7 @@ const SelectDnSubDetails = async (req,res) => {
     const topcount = req.body.topcount;
     try {
         await sql.connect(sqlConfig)
-        const result = await sql.query(`select Top ${topcount} * from ${org}.dbo.tbl_sub_debitnote where dn_no='${dn_no}' and voucher_no ='${voucher_no}' ORDER BY sno DESC`)
+        const result = await sql.query(`select Top ${topcount} * from ${org}.dbo.tbl_sub_debitnote where  voucher_no ='${voucher_no}' ORDER BY sno DESC`)
         res.send(result.recordset) 
     }
     catch (err) {
@@ -145,4 +144,30 @@ const SelectDnSubDetails = async (req,res) => {
     }
 }
 
-module.exports = {InsertDebitNote,AllDNData,ChangeDNStatus,getDNData,UpdateDebitNote,InsertSubDebitNote,SelectDnSubDetails}
+const filterDN = async (req, res) => {
+    const org = req.body.org;
+    const startDate = req.body.startDate;
+    const lastDate = req.body.lastDate;
+    const vendid = req.body.vendid;
+    const locationid = req.body.locationid;
+
+
+    try {
+        await sql.connect(sqlConfig)
+        if (vendid === 'all') {
+            const result = await sql.query(`select *,convert(varchar(15),dn_date,121) as Joindate from ${org}.dbo.tbl_debitnote with (nolock) where dn_date between '${startDate}' 
+            and '${lastDate}' or location ='${locationid}'  order by sno desc; `)
+            res.send(result.recordset)
+        }
+        else {
+            const result = await sql.query(`select *,convert(varchar(15),dn_date,121) as Joindate from ${org}.dbo.tbl_debitnote with (nolock) where dn_date between '${startDate}' 
+            and '${lastDate}' and vend_id='${vendid}' or location ='${locationid}'  order by sno desc;`)
+            res.send(result.recordset)
+        }
+    }
+    catch (err) {
+        res.send(err)
+    }
+}
+
+module.exports = {InsertDebitNote,AllDNData,ChangeDNStatus,getDNData,UpdateDebitNote,InsertSubDebitNote,SelectDnSubDetails,filterDN}

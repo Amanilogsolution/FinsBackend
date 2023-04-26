@@ -151,6 +151,27 @@ const AddUserRole = async (req, res) => {
     const user_id = req.body.user_id
     const uuid = uuidv1()
 
+    const salesorder_view = req.body.salesorder_view
+    const salesorder_create = req.body.salesorder_create
+    const salesorder_edit = req.body.salesorder_edit
+    const salesorder_delete = req.body.salesorder_delete
+
+    const creditnotes_view = req.body.creditnotes_view
+    const creditnotes_create = req.body.creditnotes_create
+    const creditnotes_edit = req.body.creditnotes_edit
+    const creditnotes_delete = req.body.creditnotes_delete
+
+    const purchasesorder_view = req.body.purchasesorder_view
+    const purchasesorder_create = req.body.purchasesorder_create
+    const purchasesorder_edit = req.body.purchasesorder_edit
+    const purchasesorder_delete = req.body.purchasesorder_delete
+
+    const debitnote_view = req.body.debitnote_view
+    const debitnote_create = req.body.debitnote_create
+    const debitnote_edit = req.body.debitnote_edit
+    const debitnote_delete = req.body.debitnote_delete
+
+
     try {
         await sql.connect(sqlConfig)
 
@@ -198,7 +219,11 @@ const AddUserRole = async (req, res) => {
                 reports_bill_view,reports_bill_create,reports_bill_edit,reports_bill_delete,
                 reports_invoice_view,reports_invoice_create,reports_invoice_edit,reports_invoice_delete,
                 
-                add_user_name,add_system_name ,add_ip_address,add_date_time,status,roles_uuid )
+                add_user_name,add_system_name ,add_ip_address,add_date_time,status,roles_uuid,
+                 salesorder_view,salesorder_create,salesorder_edit,salesorder_delete,
+                 creditnotes_view,creditnotes_create,creditnotes_edit,creditnotes_delete,
+                 purchasesorder_view,purchasesorder_create,purchasesorder_edit,purchasesorder_delete,
+                 debitnote_view,debitnote_create,debitnote_edit,debitnote_delete)
                       
       values('${roles}','${role_id}','${description}','${sales_all}',
       '${customer_view}','${customer_create}','${customer_edit}','${customer_delete}',
@@ -236,7 +261,11 @@ const AddUserRole = async (req, res) => {
       '${reports_all}',
       '${reports_bill_view}','${reports_bill_create}','${reports_bill_edit}','${reports_bill_delete}',
       '${reports_invoice_view}','${reports_invoice_create}','${reports_invoice_edit}','${reports_invoice_delete}',
-      '${user_id}','${os.hostname()}','${req.ip}',getDate(),'Active','${uuid}')`)
+      '${user_id}','${os.hostname()}','${req.ip}',getDate(),'Active','${uuid}',
+      '${salesorder_view}','${salesorder_create}','${salesorder_edit}','${salesorder_delete}',
+      '${creditnotes_view}','${creditnotes_create}','${creditnotes_edit}','${creditnotes_delete}',
+      '${purchasesorder_view}','${purchasesorder_create}','${purchasesorder_edit}','${purchasesorder_delete}',
+      '${debitnote_view}','${debitnote_create}','${debitnote_edit}','${debitnote_delete}')`)
 
             res.send('Added')
         }
